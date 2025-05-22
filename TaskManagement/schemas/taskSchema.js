@@ -31,7 +31,6 @@ exports.createTaskSchema = Joi.object({
     })
 });
 
-
 exports.updateTaskSchema = Joi.object({
     task_title: Joi.string().required(),
     task_details: Joi.string().required(),
@@ -39,6 +38,6 @@ exports.updateTaskSchema = Joi.object({
     task_deadline: Joi.date().required(),
     task_completing_date: Joi.date().allow(null),
     assigned_employee_ids: Joi.array().items(Joi.number().integer()).required(),
-    status: Joi.string().valid('pending', 'in-progress', 'completed').required()
+    status: Joi.string().valid('To Do', 'In Progress', 'Completed').required()
 });
 

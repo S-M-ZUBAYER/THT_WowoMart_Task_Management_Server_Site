@@ -26,9 +26,6 @@ exports.updateUserSchema = Joi.object({
     image: Joi.string().base64().required()
 });
 
-// exports.deleteUserSchema = Joi.object({
-//     id: Joi.number().required()
-// });
 
 exports.deleteUserSchema = Joi.object({
     id: Joi.number().integer().positive().required().messages({
@@ -38,8 +35,6 @@ exports.deleteUserSchema = Joi.object({
         'any.required': '"id" is a required field'
     })
 });
-
-
 
 exports.findUsersByIdsSchema = Joi.object({
     ids: Joi.array()

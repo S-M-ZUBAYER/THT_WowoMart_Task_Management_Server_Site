@@ -19,7 +19,7 @@ exports.uploadTestReport = async (req, res) => {
         const uploadedResults = [];
 
         for (const file of files) {
-            const filePath = `http://localhost:5000/tht/taskManagement/api/`;
+            const filePath = `https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/`;
             await TestReportsModel.insertTestReport(task_id, file.filename, filePath);
             uploadedResults.push({ filename: file.filename, path: filePath });
         }
@@ -38,7 +38,6 @@ exports.uploadTestReport = async (req, res) => {
         });
     }
 };
-
 
 // GET: Get all reports by task_id
 exports.getTestReportsByTaskId = async (req, res) => {

@@ -68,6 +68,14 @@
 const { createTaskSchema } = require('../schemas/taskSchema');
 const TaskModel = require('../model/TaskFullInfoModel');
 const { updateTaskSchema } = require('../schemas/taskSchema');
+const {
+    getTaskInfo,
+    getUsersByIds,
+    getDiscussionsByTaskId,
+    getAttachmentsByDiscussionId,
+    getTestReportsByTaskId,
+    getResourceFilesByTaskId
+} = require('../model/TaskFullInfoModel');
 
 exports.createTask = async (req, res) => {
     try {
@@ -103,8 +111,6 @@ exports.createTask = async (req, res) => {
         });
     }
 };
-
-
 
 exports.updateTask = async (req, res) => {
     try {
@@ -144,16 +150,6 @@ exports.updateTask = async (req, res) => {
         });
     }
 };
-
-
-const {
-    getTaskInfo,
-    getUsersByIds,
-    getDiscussionsByTaskId,
-    getAttachmentsByDiscussionId,
-    getTestReportsByTaskId,
-    getResourceFilesByTaskId
-} = require('../model/TaskFullInfoModel');
 
 exports.getTaskDetailsById = async (req, res) => {
     const { taskId } = req.params;
@@ -200,7 +196,6 @@ exports.getTaskDetailsById = async (req, res) => {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
-
 
 exports.deleteTaskById = async (req, res) => {
     try {

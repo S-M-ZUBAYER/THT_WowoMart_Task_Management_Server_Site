@@ -15,7 +15,7 @@ exports.createResourceFiles = async (req, res) => {
 
         const fileInsertPromises = files.map(file => {
             const fileUrl = `${file.filename}`;
-            const fullPath = "http://localhost:5000/tht/";
+            const fullPath = "https://grozziie.zjweiting.com:57683/tht/uploads/resources_files/";
             return ResourceFilesModel.createResourceFile(task_id, fileUrl, fullPath);
         });
 
@@ -39,43 +39,6 @@ exports.getResourceFilesByTaskId = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error while fetching files.', result: [] });
     }
 };
-
-
-
-
-// exports.deleteResourceFilesByTaskId = async (req, res) => {
-//     try {
-//         const { task_id } = req.body;
-
-//         if (!task_id) {
-//             return res.status(400).json({ status: 400, message: 'task_id is required.', result: [] });
-//         }
-
-//         // Step 1: Get file paths from DB
-//         const files = await ResourceFilesModel.getResourceFilesByTaskId(task_id);
-
-//         // Step 2: Delete files from folder
-//         for (const file of files) {
-//             const filePath = path.resolve(file.path);
-//             if (fs.existsSync(filePath)) {
-//                 fs.unlinkSync(filePath);
-//             }
-//         }
-
-//         // Step 3: Delete records from DB
-//         await ResourceFilesModel.deleteResourceFilesByTaskId(task_id);
-
-//         return res.status(200).json({ status: 200, message: 'Files deleted successfully.', result: [] });
-//     } catch (error) {
-//         console.error('Error deleting resource files:', error);
-//         return res.status(500).json({ status: 500, message: 'Server error while deleting files.', result: [] });
-//     }
-// };
-
-
-
-
-
 
 exports.deleteResourceFilesByTaskId = async (req, res) => {
     try {

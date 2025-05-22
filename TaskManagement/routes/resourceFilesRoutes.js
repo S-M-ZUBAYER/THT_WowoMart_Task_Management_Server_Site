@@ -10,6 +10,8 @@ const uploadPath = path.join(__dirname, '../uploads/resources_files');
 if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
 }
+// ✅ Serve uploads via public URL
+router.use('/uploads/resources_files', express.static(uploadPath));
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -19,6 +21,7 @@ const storage = multer.diskStorage({
         cb(null, uniqueName);
     }
 });
+
 const upload = multer({ storage });
 
 // Routes
