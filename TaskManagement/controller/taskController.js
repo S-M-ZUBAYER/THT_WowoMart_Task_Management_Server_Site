@@ -156,7 +156,12 @@ exports.getTaskDetailsById = async (req, res) => {
 
     try {
         const task = await getTaskInfo(taskId);
-        if (!task) return res.status(404).json({ message: 'Task not found' });
+
+        if (!task || task === undefined) return res.status(404).json({
+            status: 404,
+            message: 'Task not found',
+            result: null
+        });
 
         // Get assigned users
         let assignedEmployees = [];
@@ -181,6 +186,7 @@ exports.getTaskDetailsById = async (req, res) => {
         const resourceFiles = await getResourceFilesByTaskId(taskId);
 
         res.status(200).json({
+            status: 200,
             message: 'Task Details Retrieved Successfully',
             data: {
                 taskInfo: task,
