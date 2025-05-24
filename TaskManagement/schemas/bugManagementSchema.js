@@ -13,10 +13,19 @@ exports.createBugSchema = Joi.object({
         'date.base': 'Invalid date format'
     }),
     solveDate: Joi.string().optional().allow('', null),// ✅ Optional,
-    asignWith: Joi.string().required(),
-    priority: Joi.string().valid('Low', 'Medium', 'High').required(),
-    status: Joi.string().valid('Pending', 'In Progress', 'Resolved').required(),
+    assignWith: Joi.array().items(Joi.number()).messages({
+        'any.required': 'AssignWith is required',
+        'array.base': 'AssignWith must be an array of user IDs'
+    }),
+
+    priority: Joi.string().valid('High', 'Medium', 'Low').required(),
+    status: Joi.string().valid('Pending', 'In Progress', 'Solved').required(),
     createdEmail: Joi.string().email().required(),
+    bugProjectId: Joi.number().required().messages({
+        'any.required': 'bugProjectId is required',
+        'number.base': 'bugProjectId must be a number'
+    })
+
 });
 
 exports.updateBugSchema = this.createBugSchema.keys({

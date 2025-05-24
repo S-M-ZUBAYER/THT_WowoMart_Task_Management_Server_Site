@@ -8,6 +8,7 @@ exports.createUser = async (user) => {
     return result;
 };
 
+
 exports.findUserByEmail = async (email) => {
     const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE email = ?`, [email]);
     return rows[0];
