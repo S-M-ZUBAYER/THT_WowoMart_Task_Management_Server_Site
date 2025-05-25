@@ -25,6 +25,14 @@ exports.createTask = async (data) => {
     return result; // ✅ This will contain insertId, affectedRows, etc.
 };
 
+// create project name in another table for bug management
+exports.createBugProjectFromTask = async (bugProjectName) => {
+    const query = `INSERT INTO bugproject (bugProjectName) VALUES (?)`;
+    await TaskManagementPool.execute(query, [bugProjectName]);
+};
+
+
+
 // Update created task
 exports.updateTask = async (id, data) => {
     const query = `

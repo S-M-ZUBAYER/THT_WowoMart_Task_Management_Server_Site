@@ -1,70 +1,3 @@
-// // File: controllers/taskController.js
-// const TaskManagementPool = require('../../TaskManagementDb/config/db');
-
-// exports.createTask = async (req, res) => {
-//     const {
-//         task_title,
-//         task_details,
-//         task_starting_time,
-//         task_deadline,
-//         task_completing_date,
-//         assigned_employee_ids,
-//         status
-//     } = req.body;
-
-//     try {
-//         const [result] = await TaskManagementPool.query(
-//             `INSERT INTO TaskFullInfo (task_title, task_details, task_starting_time, task_deadline, task_completing_date, assigned_employee_ids, status)
-//        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-//             [task_title, task_details, task_starting_time, task_deadline, task_completing_date, assigned_employee_ids, status]
-//         );
-//         res.status(201).json({ id: result.insertId });
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
-
-// exports.getAllTasks = async (req, res) => {
-//     try {
-//         const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo`);
-//         res.json(rows);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
-
-// exports.getTaskById = async (req, res) => {
-//     try {
-//         const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo WHERE id = ?`, [req.params.id]);
-//         res.json(rows[0]);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
-
-// exports.updateTask = async (req, res) => {
-//     const { task_title, task_details, task_starting_time, task_deadline, task_completing_date, assigned_employee_ids, status } = req.body;
-//     try {
-//         await TaskManagementPool.query(
-//             `UPDATE TaskFullInfo SET task_title=?, task_details=?, task_starting_time=?, task_deadline=?, task_completing_date=?, assigned_employee_ids=?, status=? WHERE id = ?`,
-//             [task_title, task_details, task_starting_time, task_deadline, task_completing_date, assigned_employee_ids, status, req.params.id]
-//         );
-//         res.sendStatus(204);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
-
-// exports.deleteTask = async (req, res) => {
-//     try {
-//         await TaskManagementPool.query(`DELETE FROM TaskFullInfo WHERE id = ?`, [req.params.id]);
-//         res.sendStatus(204);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
-
-
 const { createTaskSchema } = require('../schemas/taskSchema');
 const TaskModel = require('../model/TaskFullInfoModel');
 const { updateTaskSchema } = require('../schemas/taskSchema');
@@ -77,33 +10,68 @@ const {
     getResourceFilesByTaskId
 } = require('../model/TaskFullInfoModel');
 
+// exports.createTask = async (req, res) => {
+//     try {
+//         // Validate request body
+//         const { error, value } = createTaskSchema.validate(req.body);
+//         if (error) {
+//             return res.status(400).json({ status: 400, message: error.details[0].message, result: null });
+//         }
+
+//         // Convert assigned_employee_ids array to comma-separated string
+//         const assignedIdsString = value.assigned_employee_ids.join(',');
+
+//         // Prepare data for DB insertion
+//         const taskData = {
+//             ...value,
+//             assigned_employee_ids: assignedIdsString
+//         };
+
+//         const result = await TaskModel.createTask(taskData);
+
+
+//         res.status(201).json({
+//             status: 201,
+//             message: 'Task created successfully',
+//             result: { insertId: result.insertId }
+//         });
+//     } catch (err) {
+//         console.error('Error creating task:', err);
+//         res.status(500).json({
+//             status: 500,
+//             message: 'Internal server error',
+//             result: null
+//         });
+//     }
+// };
+
 exports.createTask = async (req, res) => {
     try {
-        // Validate request body
         const { error, value } = createTaskSchema.validate(req.body);
         if (error) {
             return res.status(400).json({ status: 400, message: error.details[0].message, result: null });
         }
 
-        // Convert assigned_employee_ids array to comma-separated string
         const assignedIdsString = value.assigned_employee_ids.join(',');
 
-        // Prepare data for DB insertion
         const taskData = {
             ...value,
             assigned_employee_ids: assignedIdsString
         };
 
-        const result = await TaskModel.createTask(taskData);
+        // Insert into Task table
+        const taskResult = await TaskModel.createTask(taskData);
 
+        // Insert into bugproject table
+        await TaskModel.createBugProjectFromTask(taskData.task_title);
 
         res.status(201).json({
             status: 201,
-            message: 'Task created successfully',
-            result: { insertId: result.insertId }
+            message: 'Task and bug project created successfully',
+            result: { insertId: taskResult.insertId }
         });
     } catch (err) {
-        console.error('Error creating task:', err);
+        console.error('Error creating task and bug project:', err);
         res.status(500).json({
             status: 500,
             message: 'Internal server error',
@@ -111,6 +79,7 @@ exports.createTask = async (req, res) => {
         });
     }
 };
+
 
 exports.updateTask = async (req, res) => {
     try {

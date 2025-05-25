@@ -8,12 +8,6 @@ exports.createUser = async (user) => {
     return result;
 };
 
-
-exports.findUserByEmail = async (email) => {
-    const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE email = ?`, [email]);
-    return rows[0];
-};
-
 exports.updateUser = async (user) => {
     const [result] = await TaskManagementPool.execute(
         `UPDATE users SET name=?, role=?, designation=?, phone=?, joiningDate=?, image=? WHERE id=?`,
@@ -21,6 +15,12 @@ exports.updateUser = async (user) => {
     );
     return result.affectedRows > 0;
 };
+
+exports.findUserByEmail = async (email) => {
+    const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE email = ?`, [email]);
+    return rows[0];
+};
+
 
 exports.findUserById = async (id) => {
     const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE id = ?`, [id]);
@@ -40,5 +40,17 @@ exports.findUsersByIds = async (ids) => {
     const sql = `SELECT * FROM users WHERE id IN (${placeholders})`;
 
     const [rows] = await TaskManagementPool.execute(sql, ids);
+    return rows;
+};
+
+exports.getAllUsers = async () => {
+    const sql = `SELECT id, name, email, image, role, joiningDate, phone, designation, created_at FROM users`;
+    const [rows] = await TaskManagementPool.execute(sql);
+    return rows;
+};
+
+exports.getAllUsersWithOutImage = async () => {
+    const sql = `SELECT id, name, email,role,designation FROM users`;
+    const [rows] = await TaskManagementPool.execute(sql);
     return rows;
 };

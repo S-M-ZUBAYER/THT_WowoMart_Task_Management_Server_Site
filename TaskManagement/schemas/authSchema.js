@@ -7,13 +7,7 @@ exports.registerSchema = Joi.object({
     role: Joi.string().required(),
     designation: Joi.string().required(),
     phone: Joi.string().required(),
-    joiningDate: Joi.date().required(),
-    image: Joi.string().base64().required()
-});
-
-exports.loginSchema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    joiningDate: Joi.date().required()
 });
 
 exports.updateUserSchema = Joi.object({
@@ -22,10 +16,13 @@ exports.updateUserSchema = Joi.object({
     role: Joi.string().required(),
     designation: Joi.string().required(),
     phone: Joi.string().required(),
-    joiningDate: Joi.date().required(),
-    image: Joi.string().base64().required()
+    joiningDate: Joi.date().required()
 });
 
+exports.loginSchema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+});
 
 exports.deleteUserSchema = Joi.object({
     id: Joi.number().integer().positive().required().messages({
