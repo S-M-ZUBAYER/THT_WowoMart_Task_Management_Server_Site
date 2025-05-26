@@ -97,3 +97,8 @@ exports.getResourceFilesByTaskId = async (taskId) => {
     return rows;
 };
 
+// Get task info
+exports.deleteTaskById = async (taskId) => {
+    const [rows] = await TaskManagementPool.query(` DELETE FROM TaskFullInfo WHERE id=? `, [taskId]);
+    return rows[0];
+};

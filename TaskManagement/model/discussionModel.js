@@ -43,12 +43,6 @@ const discussionModel = {
         return executeQuery(query, [discussionId]);
     },
 
-    // Delete attachments by discussion ID
-    deleteAttachmentsByDiscussionId: (discussionId) => {
-        const query = `DELETE FROM DiscussionAttachment WHERE discussion_id = ?`;
-        return executeQuery(query, [discussionId]);
-    },
-
     // Delete discussion by ID
     deleteDiscussionById: (discussionId) => {
         const query = `DELETE FROM TaskDiscussionInfo WHERE id = ?`;

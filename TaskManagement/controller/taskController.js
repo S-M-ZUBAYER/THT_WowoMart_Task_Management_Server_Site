@@ -9,41 +9,10 @@ const {
     getTestReportsByTaskId,
     getResourceFilesByTaskId
 } = require('../model/TaskFullInfoModel');
+const discussionModel = require('../model/discussionModel');
+const { deleteTestReportsByTaskId } = require('../model/testReportsModel');
+const { deleteResourceFilesByTaskId } = require('../model/resourceFilesModel');
 
-// exports.createTask = async (req, res) => {
-//     try {
-//         // Validate request body
-//         const { error, value } = createTaskSchema.validate(req.body);
-//         if (error) {
-//             return res.status(400).json({ status: 400, message: error.details[0].message, result: null });
-//         }
-
-//         // Convert assigned_employee_ids array to comma-separated string
-//         const assignedIdsString = value.assigned_employee_ids.join(',');
-
-//         // Prepare data for DB insertion
-//         const taskData = {
-//             ...value,
-//             assigned_employee_ids: assignedIdsString
-//         };
-
-//         const result = await TaskModel.createTask(taskData);
-
-
-//         res.status(201).json({
-//             status: 201,
-//             message: 'Task created successfully',
-//             result: { insertId: result.insertId }
-//         });
-//     } catch (err) {
-//         console.error('Error creating task:', err);
-//         res.status(500).json({
-//             status: 500,
-//             message: 'Internal server error',
-//             result: null
-//         });
-//     }
-// };
 
 exports.createTask = async (req, res) => {
     try {
@@ -79,7 +48,6 @@ exports.createTask = async (req, res) => {
         });
     }
 };
-
 
 exports.updateTask = async (req, res) => {
     try {
@@ -181,22 +149,22 @@ exports.deleteTaskById = async (req, res) => {
         }
 
         // Get discussion IDs related to this task
-        const discussionIdsResult = await TaskModel.getDiscussionIdsByTaskId(task_id);
+        const discussionIdsResult = await TaskModel.getDiscussionsByTaskId(task_id);
         const discussionIds = discussionIdsResult.map(row => row.id);
 
         // Delete attachments based on discussion IDs
         if (discussionIds.length > 0) {
-            await TaskModel.deleteDiscussionAttachmentsByDiscussionIds(discussionIds);
+            await discussionModel.deleteAttachmentsByTaskId(discussionIds);
         }
 
         // Delete discussions
-        await TaskModel.deleteDiscussionsByTaskId(task_id);
+        await discussionModel.deleteDiscussionById(task_id);
 
         // Delete test reports
-        await TaskModel.deleteTestReportsByTaskId(task_id);
+        await deleteTestReportsByTaskId(task_id);
 
         // Delete resource files
-        await TaskModel.deleteResourceFilesByTaskId(task_id);
+        await deleteResourceFilesByTaskId(task_id);
 
         // Finally delete the task
         await TaskModel.deleteTaskById(task_id);

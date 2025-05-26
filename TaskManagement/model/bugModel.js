@@ -10,10 +10,11 @@ exports.create = (data) => {
             data.solveDate,
             Array.isArray(data.assignWith) ? data.assignWith.join(',') : null,  // Convert array to comma-separated string
             data.priority,
-            data.attachmentFile,
+            // data.attachmentFile,
+            `https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/${data.attachmentFile}`,
             data.status,
             data.createdEmail,
-            "https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/",
+            `https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/${data.attachmentFile}`,
             data.bugProjectId
         ]
     );

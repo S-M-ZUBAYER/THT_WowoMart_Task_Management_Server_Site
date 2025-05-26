@@ -1,6 +1,7 @@
 const { createDiscussionSchema } = require('../schemas/discussionSchema');
 const DiscussionModel = require('../model/discussionModel');
 const { updateDiscussionSchema } = require('../schemas/discussionSchema');
+const attachmentModel = require('../model/attachmentModel');
 
 
 
@@ -124,7 +125,7 @@ exports.deleteByTaskId = async (req, res) => {
 exports.deleteByDiscussionId = async (req, res) => {
     try {
         const { discussion_id } = req.body;
-        await DiscussionModel.deleteAttachmentsByDiscussionId(discussion_id);
+        await attachmentModel.deleteDiscussionIdAttachment(discussion_id);
         await DiscussionModel.deleteDiscussionById(discussion_id);
         res.status(200).json({ status: 200, message: 'Discussion deleted successfully' });
     } catch (err) {

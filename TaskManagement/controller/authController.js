@@ -9,20 +9,7 @@ const {
     findUsersByIdsSchema
 } = require('../schemas/authSchema');
 
-// exports.registerUser = async (req, res) => {
-//     try {
-//         const { error } = registerSchema.validate(req.body);
-//         if (error) return res.status(400).json({ status: 400, message: error.details[0].message, result: null });
 
-//         const existing = await authModel.findUserByEmail(req.body.email);
-//         if (existing) return res.status(409).json({ status: 409, message: 'Email already registered', result: null });
-
-//         const result = await authModel.createUser(req.body);
-//         res.status(201).json({ status: 201, message: 'User registered successfully', result });
-//     } catch (err) {
-//         res.status(500).json({ status: 500, message: 'Server error', result: null });
-//     }
-// };
 
 exports.registerUser = async (req, res) => {
     try {

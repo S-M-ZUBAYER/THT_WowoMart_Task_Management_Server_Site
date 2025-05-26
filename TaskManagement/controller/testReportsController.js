@@ -19,8 +19,9 @@ exports.uploadTestReport = async (req, res) => {
         const uploadedResults = [];
 
         for (const file of files) {
-            const filePath = `https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/`;
-            await TestReportsModel.insertTestReport(task_id, file.filename, filePath);
+            const filePath = `https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/${file.filename}`;
+            const filename = `https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/${file.filename}`;
+            await TestReportsModel.insertTestReport(task_id, filename, filePath);
             uploadedResults.push({ filename: file.filename, path: filePath });
         }
 
@@ -82,30 +83,36 @@ exports.deleteTestReportsByTaskId = async (req, res) => {
             });
         }
 
+        // Step 1: Get all test report records for the task
         const files = await TestReportsModel.getTestReportsByTaskId(task_id);
 
+        // Step 2: Delete files from filesystem
         files.forEach((file) => {
-            const filePath = path.join(__dirname, '../', file.path); // Correct path
+            const fileName = file.path.replace('https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/', '');
+            const filePath = path.join(__dirname, '../uploads/test_reports_files', fileName);
+
             if (fs.existsSync(filePath)) {
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        console.error(`❌ Error deleting file: ${filePath}`, err.message);
-                    } else {
-                        console.log(`✅ Deleted file: ${filePath}`);
-                    }
-                });
+                try {
+                    fs.unlinkSync(filePath);
+                    console.log(`✅ Deleted file: ${filePath}`);
+                } catch (err) {
+                    console.error(`❌ Error deleting file: ${filePath}`, err.message);
+                }
             } else {
                 console.warn(`⚠️ File does not exist: ${filePath}`);
             }
         });
 
+        // Step 3: Delete DB entries
         await TestReportsModel.deleteTestReportsByTaskId(task_id);
 
+        // Step 4: Return response with deleted records
         return res.status(200).json({
             status: 200,
             message: 'Test report files deleted successfully.',
-            result: [],
+            result: files,
         });
+
     } catch (error) {
         console.error('❌ Error deleting test reports:', error);
         return res.status(500).json({
@@ -115,4 +122,5 @@ exports.deleteTestReportsByTaskId = async (req, res) => {
         });
     }
 };
+
 
