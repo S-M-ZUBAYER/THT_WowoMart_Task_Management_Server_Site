@@ -4,9 +4,8 @@ const router = express.Router();
 const couponController = require('../controller/couponUserListController');
 const authenticateToken = require('../middleware/jwt');
 
-// Routes
+
 router.post('/wowomart/api/shopify/couponUserList/create', couponController.createCoupon);
-// router.get('/shopify/allCouponUserList', authenticateToken, couponController.getAllCoupons);
 router.get('/wowomart/api/shopify/allCouponUserList', couponController.getAllCoupons);
 router.get('/wowomart/api/shopify/couponUserList/:id', couponController.getCouponById);
 router.put('/wowomart/api/shopify/couponUserList/update/:id', couponController.updateCoupon);

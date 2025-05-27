@@ -9,7 +9,6 @@ exports.getAllCoupons = async (req, res) => {
     }
 };
 
-
 exports.getCouponById = async (req, res) => {
     try {
         const result = await CouponManagement.getById(req.params.id);
@@ -22,7 +21,6 @@ exports.getCouponById = async (req, res) => {
     }
 };
 
-
 exports.createCoupon = async (req, res) => {
     try {
         const result = await CouponManagement.create(req.body);
@@ -32,18 +30,15 @@ exports.createCoupon = async (req, res) => {
     }
 };
 
-
 exports.updateCoupon = async (req, res) => {
     try {
         const result = await CouponManagement.update(req.params.id, req.body);
-
         if (result.affectedRows === 0) {
             return res.status(404).json({
                 status: 404,
                 result: "Coupon with this ID not found",
             });
         }
-
         res.status(200).json({
             status: 200,
             result: "Coupon Updated Successfully",
@@ -56,19 +51,15 @@ exports.updateCoupon = async (req, res) => {
     }
 };
 
-
-
 exports.deleteCoupon = async (req, res) => {
     try {
         const result = await CouponManagement.remove(req.params.id);
-
         if (result.affectedRows === 0) {
             return res.status(404).json({
                 status: 404,
                 result: "Coupon with this ID not found",
             });
         }
-
         res.status(200).json({
             status: 200,
             result: "Delete This Coupon Successfully",

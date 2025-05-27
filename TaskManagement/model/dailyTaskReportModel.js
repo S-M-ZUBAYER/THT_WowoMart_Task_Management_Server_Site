@@ -28,13 +28,12 @@ exports.getAll = () => {
 exports.getByDate = async (date) => {
     const query = 'SELECT * FROM dailyTaskReport WHERE reportDate = ?';
     return await TaskManagementPool.query(query, [date]);
-},
+};
 
-
-    exports.deleteById = (id) => {
-        const sql = 'DELETE FROM dailyTaskReport WHERE id = ?';
-        return TaskManagementPool.query(sql, [id]);
-    };
+exports.deleteById = (id) => {
+    const sql = 'DELETE FROM dailyTaskReport WHERE id = ?';
+    return TaskManagementPool.query(sql, [id]);
+};
 
 exports.deleteByMultipleId = (ids) => {
     const sql = `DELETE FROM dailyTaskReport WHERE id IN (?)`;

@@ -1,32 +1,9 @@
-// const express = require('express');
-// const app = express();
-// app.use(express.json());
-
-// // Routes
-// const userRoutes = require('./wowomart/routes/userRoutes');
-// const productRoutes = require('./TaskManagement/routes/productRoutes');
-
-// // Mount routes
-// app.use('/wowomart/users', userRoutes);
-// app.use('/TaskManagement/products', productRoutes);
-
-
-
-// // Start server
-// const PORT = 5000;
-// app.listen(PORT, () => {
-//     console.log(`Server running on http://localhost:${PORT}`);
-// });
-
-
-
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -133,7 +110,6 @@ app.get('/health/wowomart', async (req, res) => {
     }
 });
 
-
 app.get('/health/task', async (req, res) => {
     try {
         const connection = await taskManagementPool.getConnection();
@@ -158,8 +134,6 @@ app.get('/', (req, res) => {
         taskManagement: '/TaskManagement/[your-routes]'
     });
 });
-
-
 
 // ========== Graceful Shutdown ========== //
 process.on('SIGINT', async () => {
@@ -195,10 +169,6 @@ Promise.all([
             console.log(`🚀 Server is running on http://localhost:${PORT}`);
         });
     })
-    // .catch(() => {
-    //     console.error('❌ One or more databases failed to connect. Server not started.');
-    //     process.exit(1);
-    // });
     .catch((err) => {
         console.error('❌ One or more databases failed to connect. Server not started.');
         console.error('🔍 Detailed error:', err); // <- This line shows the real issue

@@ -25,7 +25,6 @@ const CouponUserInfo = {
         }));
     },
 
-
     getById: async (id) => {
         try {
             const query = `
@@ -116,9 +115,6 @@ const CouponUserInfo = {
         }
     },
 
-
-
-
     update: async (id, data) => {
         const {
             user_name,
@@ -182,56 +178,6 @@ const CouponUserInfo = {
             connection.release();
         }
     },
-
-
-
-    // remove: (id) => {
-    //     return new Promise((resolve, reject) => {
-    //         wowomartPool.getConnection((err, connection) => {
-    //             if (err) return reject(err);
-
-    //             connection.beginTransaction(err => {
-    //                 if (err) {
-    //                     connection.release();
-    //                     return reject(err);
-    //                 }
-
-    //                 // First delete from coupon_cause
-    //                 connection.query('DELETE FROM coupon_cause WHERE user_id = ?', [id], (err) => {
-    //                     if (err) {
-    //                         return connection.rollback(() => {
-    //                             connection.release();
-    //                             reject(err);
-    //                         });
-    //                     }
-
-    //                     // Then delete from coupon_user_info
-    //                     connection.query('DELETE FROM coupon_user_info WHERE id = ?', [id], (err, result) => {
-    //                         if (err) {
-    //                             return connection.rollback(() => {
-    //                                 connection.release();
-    //                                 reject(err);
-    //                             });
-    //                         }
-
-    //                         connection.commit(err => {
-    //                             if (err) {
-    //                                 return connection.rollback(() => {
-    //                                     connection.release();
-    //                                     reject(err);
-    //                                 });
-    //                             }
-    //                             connection.release();
-    //                             resolve({ message: 'User and related causes deleted successfully', result });
-    //                         });
-    //                     });
-    //                 });
-    //             });
-    //         });
-    //     });
-    // },
-
-
 
     remove: async (id) => {
         const connection = await wowomartPool.getConnection();

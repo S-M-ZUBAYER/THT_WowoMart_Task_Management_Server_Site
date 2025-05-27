@@ -1,7 +1,7 @@
 const DiscountPercent = require('../model/DiscountPercentModel');
 const discountPercentSchema = require('../schemas/discountPercentSchema');
 
-// Create Discount
+
 exports.createDiscount = async (req, res) => {
     const { error } = discountPercentSchema.validate(req.body);
     if (error) {
@@ -27,7 +27,6 @@ exports.createDiscount = async (req, res) => {
     }
 };
 
-// Get All
 exports.getAllDiscounts = async (req, res) => {
     try {
         const result = await DiscountPercent.getAll();
@@ -45,7 +44,6 @@ exports.getAllDiscounts = async (req, res) => {
     }
 };
 
-// Get by ID
 exports.getDiscountById = async (req, res) => {
     try {
         const result = await DiscountPercent.getById(req.params.id);
@@ -70,7 +68,6 @@ exports.getDiscountById = async (req, res) => {
     }
 };
 
-// Update by ID
 exports.updateDiscountById = async (req, res) => {
     const { error } = discountPercentSchema.validate(req.body);
     if (error) {
@@ -102,7 +99,6 @@ exports.updateDiscountById = async (req, res) => {
     }
 };
 
-// Delete by ID
 exports.deleteDiscountById = async (req, res) => {
     try {
         const result = await DiscountPercent.remove(req.params.id);

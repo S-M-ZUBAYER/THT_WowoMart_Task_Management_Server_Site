@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../controller/dailyTaskReportController');
 
 router.post('/taskManagement/api/dailyTaskReport/create', controller.create);
-router.put('/taskManagement/api/dailyTaskReport/update', controller.updateById);
+router.post('/taskManagement/api/dailyTaskReport/update', controller.updateById);
 router.get('/taskManagement/api/dailyTaskReport/:id', controller.getById);
 router.get('/taskManagement/api/dailyTaskReport/email/:email', controller.getByEmail);
 router.get('/taskManagement/api/dailyTaskReport/get/all', controller.getAll);

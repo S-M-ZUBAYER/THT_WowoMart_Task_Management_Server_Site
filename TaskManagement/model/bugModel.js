@@ -28,6 +28,11 @@ exports.updateById = (id, data) => {
     );
 };
 
+exports.updateBugById = (id, data) => {
+    const sql = 'UPDATE bugManagement SET ? WHERE id = ?';
+    return TaskManagementPool.query(sql, [data, id]);
+};
+
 exports.getById = (id) => TaskManagementPool.execute('SELECT * FROM BugManagement WHERE id=?', [id]);
 exports.getAll = () => TaskManagementPool.execute('SELECT * FROM BugManagement');
 exports.deleteById = (id) => TaskManagementPool.execute('DELETE FROM BugManagement WHERE id=?', [id]);

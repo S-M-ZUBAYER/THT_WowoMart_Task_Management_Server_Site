@@ -25,7 +25,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Routes
 router.post('/taskManagement/api/test-reports/upload', upload.array('report_file', 10), controller.uploadTestReport);
 router.get('/taskManagement/api/test-reports/:task_id', controller.getTestReportsByTaskId);
 router.post('/taskManagement/api/test-reports/deleteByTask_id', controller.deleteTestReportsByTaskId);

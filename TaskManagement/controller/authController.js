@@ -10,7 +10,6 @@ const {
 } = require('../schemas/authSchema');
 
 
-
 exports.registerUser = async (req, res) => {
     try {
         const { error } = registerSchema.validate(req.body);
@@ -33,21 +32,6 @@ exports.registerUser = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error', result: null });
     }
 };
-
-
-// exports.updateUser = async (req, res) => {
-//     try {
-//         const { error } = updateUserSchema.validate(req.body);
-//         if (error) return res.status(400).json({ status: 400, message: error.details[0].message, result: null });
-
-//         const success = await authModel.updateUser(req.body);
-//         if (!success) return res.status(404).json({ status: 404, message: 'User not found', result: null });
-
-//         res.status(200).json({ status: 200, message: 'User updated successfully', result: req.body });
-//     } catch (err) {
-//         res.status(500).json({ status: 500, message: 'Server error', result: null });
-//     }
-// };
 
 exports.updateUser = async (req, res) => {
     try {
@@ -101,6 +85,17 @@ exports.updateUser = async (req, res) => {
     }
 };
 
+exports.makeAdminFromGeneralUser = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await authModel.makeAdminById(id);
+        res.status(200).json({ status: 200, message: 'User role updated to Admin', result });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 500, message: 'Server error' });
+    }
+};
+
 exports.loginUser = async (req, res) => {
     try {
         const { error } = loginSchema.validate(req.body);
@@ -116,22 +111,6 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error', result: null });
     }
 };
-
-// exports.deleteUser = async (req, res) => {
-//     try {
-//         const { error } = deleteUserSchema.validate(req.body);
-//         if (error) return res.status(400).json({ status: 400, message: error.details[0].message, result: null });
-
-//         const { id } = req.body;
-//         const success = await authModel.deleteUser(id);
-//         if (!success) return res.status(404).json({ status: 404, message: 'User not found', result: null });
-
-//         res.status(200).json({ status: 200, message: 'User deleted successfully', result: { id } });
-//     } catch (err) {
-//         res.status(500).json({ status: 500, message: 'Server error', result: null });
-//     }
-// };
-
 
 exports.deleteUser = async (req, res) => {
     try {
@@ -238,6 +217,7 @@ exports.getAllUsers = async (_req, res) => {
         });
     }
 };
+
 exports.getAllUsersWithOutImage = async (_req, res) => {
     try {
         const users = await authModel.getAllUsersWithOutImage();

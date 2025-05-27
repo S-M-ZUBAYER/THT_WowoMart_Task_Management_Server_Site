@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controller/authController');
-
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -19,14 +18,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/taskManagement/api/user/register', upload.single('image'), authController.registerUser);
-router.put('/taskManagement/api/user/update', upload.single('image'), authController.updateUser);
+router.post('/taskManagement/api/user/update', upload.single('image'), authController.updateUser);
 router.post('/taskManagement/api/user/login', authController.loginUser);
 router.post('/taskManagement/api/user/delete', authController.deleteUser);
+router.post('/taskManagement/api/makeAdmin/:id', authController.makeAdminFromGeneralUser);
 router.get('/taskManagement/api/user/find/:id', authController.findUserById);
 router.post('/taskManagement/api/user/find-many', authController.findUsersByIds);
 router.get('/taskManagement/api/users/getAll', authController.getAllUsers);
 router.get('/taskManagement/api/users/getAllWithOutImage', authController.getAllUsersWithOutImage);
-
-
 
 module.exports = router;

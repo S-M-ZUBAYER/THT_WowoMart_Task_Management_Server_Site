@@ -1,4 +1,3 @@
-// controllers/segmentDiscountController.js
 const segmentDiscountSchema = require('../schemas/segmentDiscountSchema');
 const SegmentDiscount = require('../model/segmentDiscountModel');
 
@@ -26,7 +25,6 @@ exports.createSegment = async (req, res) => {
         });
     }
 };
-
 
 exports.getAllSegments = async (req, res) => {
     try {
@@ -102,7 +100,6 @@ exports.updateSegmentById = async (req, res) => {
         });
     }
 };
-
 
 exports.deleteSegmentById = async (req, res) => {
     const { id } = req.params;

@@ -1,13 +1,12 @@
 const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config();
-
 const SHOPIFY_STORE = '1f9df1-0f.myshopify.com';
 const API_VERSION_REST = '2025-01';
 const API_VERSION_GRAPHQL = '2024-10';
 const API_TOKEN = process.env.API_TOKEN;
 
-// REST tag update
+
 const updateTags = async (req, res) => {
     try {
         const { update, customerId, tags } = req.body;
@@ -72,7 +71,6 @@ const updateTags = async (req, res) => {
     }
 };
 
-// Dummy Example 2: Get Customer Info
 const getCustomerInfo = async (req, res) => {
     const { customerId } = req.params;
 
@@ -92,7 +90,6 @@ const getCustomerInfo = async (req, res) => {
     }
 };
 
-// Dummy Example 3: List Customers
 const listCustomers = async (req, res) => {
     try {
         const response = await axios.get(
@@ -110,7 +107,6 @@ const listCustomers = async (req, res) => {
     }
 };
 
-// Exporting all functions
 module.exports = {
     updateTags,
     getCustomerInfo,

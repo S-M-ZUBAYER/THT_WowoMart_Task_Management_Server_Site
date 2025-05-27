@@ -31,3 +31,23 @@ exports.createBugSchema = Joi.object({
 exports.updateBugSchema = this.createBugSchema.keys({
     attachmentFile: Joi.string().optional()
 });
+
+exports.updateBugStatusSchema = Joi.object({
+    status: Joi.string()
+        .valid('Pending', 'In Progress', 'Solved')
+        .required()
+        .messages({
+            'any.required': 'Status is required',
+            'any.only': 'Status must be one of: Pending, In Progress, Solved'
+        }),
+});
+
+exports.updateBugPrioritySchema = Joi.object({
+    priority: Joi.string()
+        .valid('High', 'Medium', 'Low')
+        .required()
+        .messages({
+            'any.required': 'Priority is required',
+            'any.only': 'Priority must be one of: High, Medium, Low'
+        }),
+});

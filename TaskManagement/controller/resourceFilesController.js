@@ -1,5 +1,4 @@
 const ResourceFilesModel = require('../model/resourceFilesModel');
-
 const fs = require('fs');
 const path = require('path');
 
@@ -48,7 +47,6 @@ exports.createResourceFiles = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error while uploading files.', result: [] });
     }
 };
-
 
 exports.getResourceFilesByTaskId = async (req, res) => {
     try {

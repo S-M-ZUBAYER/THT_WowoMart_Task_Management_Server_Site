@@ -1,4 +1,7 @@
-const { createTaskSchema } = require('../schemas/taskSchema');
+const path = require('path');
+const fs = require('fs');
+
+const { createTaskSchema, updateTaskStatusSchema } = require('../schemas/taskSchema');
 const TaskModel = require('../model/TaskFullInfoModel');
 const { updateTaskSchema } = require('../schemas/taskSchema');
 const {
@@ -9,6 +12,7 @@ const {
     getTestReportsByTaskId,
     getResourceFilesByTaskId
 } = require('../model/TaskFullInfoModel');
+
 const discussionModel = require('../model/discussionModel');
 const { deleteTestReportsByTaskId } = require('../model/testReportsModel');
 const { deleteResourceFilesByTaskId } = require('../model/resourceFilesModel');
@@ -88,6 +92,21 @@ exports.updateTask = async (req, res) => {
     }
 };
 
+exports.updateTaskStatus = async (req, res) => {
+    try {
+        const { error, value } = updateTaskStatusSchema.validate(req.body);
+        if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
+
+        const id = req.params.id;
+        const result = await TaskModel.updateTaskById(id, { status: value.status });
+
+        res.status(200).json({ status: 200, message: 'Bug status updated', result });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 500, message: 'Server error' });
+    }
+};
+
 exports.getTaskDetailsById = async (req, res) => {
     const { taskId } = req.params;
 
@@ -148,35 +167,70 @@ exports.deleteTaskById = async (req, res) => {
             return res.status(400).json({ status: 400, message: 'task_id must be a number', result: null });
         }
 
-        // Get discussion IDs related to this task
+        // Delete related discussions
         const discussionIdsResult = await TaskModel.getDiscussionsByTaskId(task_id);
         const discussionIds = discussionIdsResult.map(row => row.id);
 
-        // Delete attachments based on discussion IDs
         if (discussionIds.length > 0) {
-            await discussionModel.deleteAttachmentsByTaskId(discussionIds);
+            try {
+                await Promise.all(
+                    discussionIds.map(async (discussionId) => {
+                        await discussionModel.deleteByDiscussionIdForTaskId(discussionId);
+                    })
+                );
+            } catch (err) {
+                console.error('❌ Error deleting discussions:', err);
+                return res.status(500).json({ status: 500, message: 'Error deleting related discussions', result: null });
+            }
         }
 
-        // Delete discussions
-        await discussionModel.deleteDiscussionById(task_id);
-
-        // Delete test reports
-        await deleteTestReportsByTaskId(task_id);
+        // Delete test report files
+        try {
+            const testReports = await getTestReportsByTaskId(task_id);
+            for (const file of testReports) {
+                const fileName = file.path.replace('https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/', '');
+                const filePath = path.join(__dirname, '../uploads/test_reports_files', fileName);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    console.log(`✅ Deleted test report file: ${filePath}`);
+                }
+            }
+            await deleteTestReportsByTaskId(task_id);
+        } catch (err) {
+            console.error('❌ Error deleting test reports:', err);
+            return res.status(500).json({ status: 500, message: 'Error deleting test reports', result: null });
+        }
 
         // Delete resource files
-        await deleteResourceFilesByTaskId(task_id);
+        try {
+            const resourceFiles = await getResourceFilesByTaskId(task_id);
+            for (const file of resourceFiles) {
+
+                const fileName = file.resource_file.replace('https://grozziie.zjweiting.com:57683/tht/uploads/resources_files/', '');
+                const filePath = path.join(__dirname, '../uploads/resources_files', fileName);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    console.log(`✅ Deleted resource file: ${filePath}`);
+
+                }
+            }
+            await deleteResourceFilesByTaskId(task_id);
+        } catch (err) {
+            console.error('❌ Error deleting resource files:', err);
+            return res.status(500).json({ status: 500, message: 'Error deleting resource files', result: null });
+        }
 
         // Finally delete the task
         await TaskModel.deleteTaskById(task_id);
 
         return res.status(200).json({
             status: 200,
-            message: `Task and related data deleted successfully for task_id ${task_id}`,
+            message: `Task and all related files and discussions deleted successfully for task_id ${task_id}`,
             result: null
         });
 
     } catch (err) {
-        console.error('Error deleting task:', err);
+        console.error('❌ Error deleting task:', err);
         return res.status(500).json({ status: 500, message: 'Internal server error', result: null });
     }
 };

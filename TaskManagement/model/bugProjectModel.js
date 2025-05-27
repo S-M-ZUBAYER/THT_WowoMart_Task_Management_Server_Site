@@ -1,17 +1,14 @@
 const TaskManagementPool = require('../../TaskManagementDb/config/db');
 
-// Create new bug project
 exports.create = (data) => {
     const sql = 'INSERT INTO bugProject (bugProjectName) VALUES (?)';
     return TaskManagementPool.query(sql, [data.bugProjectName]);
 };
 
-// Get all bug projects
 exports.getAll = () => {
     const sql = 'SELECT * FROM bugProject';
     return TaskManagementPool.query(sql);
 };
-// Get all bug projects with related bugs grouped in an array
 
 exports.getAllBugProjectsWithBugs = async () => {
     const [projects] = await TaskManagementPool.query(`
@@ -23,18 +20,36 @@ exports.getAllBugProjectsWithBugs = async () => {
             SELECT * FROM bugManagement WHERE bugProjectId = ?
         `, [project.id]);
 
+        const bugsWithUsers = await Promise.all(bugs.map(async (bug) => {
+            const assignWithIds = (bug.assignWith || '').split(',')
+                .map(id => parseInt(id.trim()))
+                .filter(id => !isNaN(id));
+
+            let assignedUsers = [];
+            if (assignWithIds.length > 0) {
+                const [users] = await TaskManagementPool.query(
+                    `SELECT id, name, email, role, designation, phone, joiningDate, image FROM users WHERE id IN (?)`,
+                    [assignWithIds]
+                );
+                assignedUsers = users;
+            }
+
+            return {
+                ...bug,
+                assignWith: assignedUsers
+            };
+        }));
+
         return {
             id: project.id,
             bugProjectName: project.bugProjectName,
-            bugs: bugs || []
+            bugs: bugsWithUsers
         };
     }));
 
     return result;
 };
 
-
-// Delete from bugManagement first, then from bugProject
 exports.deleteProjectAndRelatedBugs = async (id) => {
     const sql1 = 'DELETE FROM bugManagement WHERE bugProjectId = ?';
     const sql2 = 'DELETE FROM bugProject WHERE id = ?';
@@ -46,8 +61,6 @@ exports.deleteProjectAndRelatedBugs = async (id) => {
     return { deleteBugs, deleteProject };
 };
 
-
-// Update bugProjectName
 exports.updateProjectName = (id, data) => {
     const sql = 'UPDATE bugProject SET ? WHERE id = ?';
     return TaskManagementPool.query(sql, [data, id]);

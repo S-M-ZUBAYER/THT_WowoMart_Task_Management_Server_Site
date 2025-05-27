@@ -1,6 +1,7 @@
 const model = require('../model/bugProjectModel');
 const schema = require('../schemas/bugProjectSchema');
-// const { getAllBugProjectsWithBugs } = require('../model/bugProjectModel');
+
+
 exports.create = async (req, res) => {
     try {
         const { error, value } = schema.createBugProjectSchema.validate(req.body);
@@ -24,7 +25,6 @@ exports.getAll = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error' });
     }
 };
-
 
 exports.getAllWithBugs = async (req, res) => {
     try {
@@ -53,7 +53,6 @@ exports.getAllWithBugs = async (req, res) => {
     }
 };
 
-
 exports.deleteProjectAndBugs = async (req, res) => {
     try {
         const { id } = req.body; // Assuming id comes from body as { id: 5 }
@@ -74,7 +73,6 @@ exports.deleteProjectAndBugs = async (req, res) => {
         });
     }
 };
-
 
 exports.updateProjectName = async (req, res) => {
     try {

@@ -1,8 +1,6 @@
-// controllers/CouponUserList.controller.js
 const CouponUserList = require('../model/couponUserListModel');
 const { couponUserListSchema } = require('../schemas/couponUserListSchema'); // 🔥 corrected import name
 
-// Create
 exports.createCoupon = async (req, res) => {
     try {
         const { error } = couponUserListSchema.validate(req.body);
@@ -15,7 +13,6 @@ exports.createCoupon = async (req, res) => {
     }
 };
 
-// Get All
 exports.getAllCoupons = async (req, res) => {
     try {
         const coupons = await CouponUserList.getAll();
@@ -25,7 +22,6 @@ exports.getAllCoupons = async (req, res) => {
     }
 };
 
-// Get By ID
 exports.getCouponById = async (req, res) => {
     try {
         const coupon = await CouponUserList.getById(req.params.id);
@@ -37,7 +33,6 @@ exports.getCouponById = async (req, res) => {
     }
 };
 
-// Update
 exports.updateCoupon = async (req, res) => {
     try {
         const { error } = couponUserListSchema.validate(req.body);
@@ -50,7 +45,6 @@ exports.updateCoupon = async (req, res) => {
     }
 };
 
-// Delete
 exports.deleteCoupon = async (req, res) => {
     try {
         const result = await CouponUserList.remove(req.params.id);
@@ -60,8 +54,6 @@ exports.deleteCoupon = async (req, res) => {
     }
 };
 
-
-// Delete and update
 exports.removeWithUpdate = async (req, res) => {
 
     try {

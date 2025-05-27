@@ -1,9 +1,5 @@
-// import axios from "axios";
 const axios = require("axios");
 const dotenv = require("dotenv");
-// import dotenv from "dotenv";
-
-
 dotenv.config();
 
 const SHOPIFY_STORE = "1f9df1-0f.myshopify.com";

@@ -10,6 +10,7 @@ const uploadPath = path.join(__dirname, '../uploads/resources_files');
 if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
 }
+
 // ✅ Serve uploads via public URL
 router.use('/uploads/resources_files', express.static(uploadPath));
 
@@ -24,7 +25,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Routes
 router.post('/taskManagement/api/resource/create', upload.array('resource_file', 10), resourceFilesController.createResourceFiles);
 router.get('/taskManagement/api/resource/:task_id', resourceFilesController.getResourceFilesByTaskId);
 router.post('/taskManagement/api/resource/delete/deleteByTaskId', resourceFilesController.deleteResourceFilesByTaskId);

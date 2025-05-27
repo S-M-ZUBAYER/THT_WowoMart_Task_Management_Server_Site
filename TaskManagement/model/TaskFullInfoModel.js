@@ -5,7 +5,6 @@ const executeQuery = async (query, params) => {
     return rows; // This works for SELECT, but not INSERT!
 };
 
-// create new task info
 exports.createTask = async (data) => {
     const query = `INSERT INTO TaskFullInfo 
       (task_title, task_details, task_starting_time, task_deadline, task_completing_date, assigned_employee_ids, status)
@@ -25,15 +24,11 @@ exports.createTask = async (data) => {
     return result; // ✅ This will contain insertId, affectedRows, etc.
 };
 
-// create project name in another table for bug management
 exports.createBugProjectFromTask = async (bugProjectName) => {
     const query = `INSERT INTO bugproject (bugProjectName) VALUES (?)`;
     await TaskManagementPool.execute(query, [bugProjectName]);
 };
 
-
-
-// Update created task
 exports.updateTask = async (id, data) => {
     const query = `
           UPDATE TaskFullInfo 
@@ -59,45 +54,42 @@ exports.updateTask = async (id, data) => {
     return result;
 };
 
+exports.updateTaskById = (id, data) => {
+    const sql = 'UPDATE TaskFullInfo SET ? WHERE id = ?';
+    return TaskManagementPool.query(sql, [data, id]);
+};
 
-// Get task info
 exports.getTaskInfo = async (taskId) => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo WHERE id = ?`, [taskId]);
     return rows[0];
 };
 
-// Get users by IDs
 exports.getUsersByIds = async (ids) => {
     if (!ids.length) return [];
     const [rows] = await TaskManagementPool.query(`SELECT * FROM users WHERE id IN (?)`, [ids]);
     return rows;
 };
 
-// Get task discussions
 exports.getDiscussionsByTaskId = async (taskId) => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskDiscussionInfo WHERE task_id = ?`, [taskId]);
     return rows;
 };
 
-// Get discussion attachments
 exports.getAttachmentsByDiscussionId = async (discussionId) => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM DiscussionAttachment WHERE discussion_id = ?`, [discussionId]);
     return rows;
 };
 
-// Get test reports
 exports.getTestReportsByTaskId = async (taskId) => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM TestReportsDocuments WHERE task_id = ?`, [taskId]);
     return rows;
 };
 
-// Get resource files
 exports.getResourceFilesByTaskId = async (taskId) => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM ResourceFiles WHERE task_id = ?`, [taskId]);
     return rows;
 };
 
-// Get task info
 exports.deleteTaskById = async (taskId) => {
     const [rows] = await TaskManagementPool.query(` DELETE FROM TaskFullInfo WHERE id=? `, [taskId]);
     return rows[0];

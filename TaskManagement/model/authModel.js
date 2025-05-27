@@ -16,11 +16,16 @@ exports.updateUser = async (user) => {
     return result.affectedRows > 0;
 };
 
+exports.makeAdminById = (id) => {
+    const sql = 'UPDATE users SET role = "Admin" WHERE id = ?';
+    return TaskManagementPool.query(sql, [id]);
+};
+
+
 exports.findUserByEmail = async (email) => {
     const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE email = ?`, [email]);
     return rows[0];
 };
-
 
 exports.findUserById = async (id) => {
     const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE id = ?`, [id]);

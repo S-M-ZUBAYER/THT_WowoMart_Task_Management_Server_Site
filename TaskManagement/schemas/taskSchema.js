@@ -41,3 +41,12 @@ exports.updateTaskSchema = Joi.object({
     status: Joi.string().valid('To Do', 'In Progress', 'Completed').required()
 });
 
+exports.updateTaskStatusSchema = Joi.object({
+    status: Joi.string()
+        .valid('To Do', 'In Progress', 'Completed')
+        .required()
+        .messages({
+            'any.required': 'Status is required',
+            'any.only': 'Status must be one of: To Do, In Progress, Completed'
+        }),
+});

@@ -5,7 +5,6 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
 const wowomartPool = require('../../wowomartDb/config/db'); // Ensure this uses mysql2/promise
-
 const upload = multer({ dest: 'uploads/' });
 
 // POST /shopify/upload-csv

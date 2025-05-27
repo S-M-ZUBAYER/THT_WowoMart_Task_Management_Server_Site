@@ -4,7 +4,6 @@ const { updateDiscussionSchema } = require('../schemas/discussionSchema');
 const attachmentModel = require('../model/attachmentModel');
 
 
-
 exports.createDiscussion = async (req, res) => {
     console.log('Incoming body:', req.body);
 
@@ -42,7 +41,6 @@ exports.createDiscussion = async (req, res) => {
     }
 };
 
-
 exports.updateDiscussion = async (req, res) => {
     try {
         const discussionId = req.params.id;
@@ -64,8 +62,6 @@ exports.updateDiscussion = async (req, res) => {
     }
 };
 
-
-// Get discussions by task ID with attachments
 exports.getDiscussionsByTaskId = async (req, res) => {
     try {
         const { taskId } = req.params;
@@ -95,8 +91,6 @@ exports.getDiscussionsByTaskId = async (req, res) => {
     }
 };
 
-
-// Get attachments by discussion ID
 exports.getAttachmentsByDiscussionId = async (req, res) => {
     try {
         const { discussionId } = req.params;
@@ -108,7 +102,6 @@ exports.getAttachmentsByDiscussionId = async (req, res) => {
     }
 };
 
-// Delete all discussions and attachments by task ID
 exports.deleteByTaskId = async (req, res) => {
     try {
         const { task_id } = req.body;
@@ -121,7 +114,6 @@ exports.deleteByTaskId = async (req, res) => {
     }
 };
 
-// Delete discussion by ID
 exports.deleteByDiscussionId = async (req, res) => {
     try {
         const { discussion_id } = req.body;
@@ -130,6 +122,22 @@ exports.deleteByDiscussionId = async (req, res) => {
         res.status(200).json({ status: 200, message: 'Discussion deleted successfully' });
     } catch (err) {
         console.error('Error deleting discussion by ID:', err);
+        res.status(500).json({ status: 500, message: 'Internal server error' });
+    }
+};
+
+exports.deleteDiscussionByIdForTaskIdController = async (req, res) => {
+    const { discussion_id } = req.body;
+
+    if (!discussion_id || typeof discussion_id !== 'number') {
+        return res.status(400).json({ status: 400, message: 'discussion_id must be a number' });
+    }
+
+    try {
+        await DiscussionModel.deleteByDiscussionIdForTaskId(discussion_id);
+        res.status(200).json({ status: 200, message: 'Discussion deleted successfully' });
+    } catch (err) {
+        console.error('Controller error while deleting discussion:', err);
         res.status(500).json({ status: 500, message: 'Internal server error' });
     }
 };

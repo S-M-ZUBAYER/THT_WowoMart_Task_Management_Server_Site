@@ -46,7 +46,6 @@ exports.createAttachment = async (req, res) => {
     }
 };
 
-
 exports.deleteByIdAttachment = async (req, res) => {
     try {
         const { id } = req.body;
@@ -96,7 +95,6 @@ exports.deleteByIdAttachment = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Internal server error', result: null });
     }
 };
-
 
 exports.deleteDiscussionIdAttachment = async (req, res) => {
     try {

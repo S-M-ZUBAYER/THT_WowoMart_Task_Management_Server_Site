@@ -34,7 +34,6 @@ exports.makeAdmin = async (req, res) => {
     }
 };
 
-
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -57,7 +56,6 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
-
 
 exports.getWowomartAllUsers = async (req, res) => {
     try {

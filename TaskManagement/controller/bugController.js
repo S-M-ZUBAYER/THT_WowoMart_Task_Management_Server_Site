@@ -71,6 +71,35 @@ exports.updateById = async (req, res) => {
     }
 };
 
+exports.updateBugStatus = async (req, res) => {
+    try {
+        const { error, value } = schema.updateBugStatusSchema.validate(req.body);
+        if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
+
+        const id = req.params.id;
+        const result = await model.updateBugById(id, { status: value.status });
+
+        res.status(200).json({ status: 200, message: 'Bug status updated', result });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 500, message: 'Server error' });
+    }
+};
+
+exports.updateBugPriority = async (req, res) => {
+    try {
+        const { error, value } = schema.updateBugPrioritySchema.validate(req.body);
+        if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
+
+        const id = req.params.id;
+        const result = await model.updateBugById(id, { priority: value.priority });
+
+        res.status(200).json({ status: 200, message: 'Bug priority updated', result });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 500, message: 'Server error' });
+    }
+};
 
 exports.getById = async (req, res) => {
     try {
@@ -122,7 +151,6 @@ exports.deleteById = async (req, res) => {
         return res.status(500).json({ status: 500, message: 'Server error' });
     }
 };
-
 
 exports.deleteByMultipleId = async (req, res) => {
     try {

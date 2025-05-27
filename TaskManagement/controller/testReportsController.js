@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const TestReportsModel = require('../model/testReportsModel');
 
-// POST: Upload multiple test reports
+
 exports.uploadTestReport = async (req, res) => {
     try {
         const { task_id } = req.body;
@@ -40,7 +40,6 @@ exports.uploadTestReport = async (req, res) => {
     }
 };
 
-// GET: Get all reports by task_id
 exports.getTestReportsByTaskId = async (req, res) => {
     try {
         const { task_id } = req.params;
@@ -70,7 +69,6 @@ exports.getTestReportsByTaskId = async (req, res) => {
     }
 };
 
-// DELETE: Delete all reports by task_id
 exports.deleteTestReportsByTaskId = async (req, res) => {
     try {
         const { task_id } = req.body;
