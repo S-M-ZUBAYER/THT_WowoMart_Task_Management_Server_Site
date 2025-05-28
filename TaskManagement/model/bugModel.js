@@ -1,6 +1,21 @@
 const TaskManagementPool = require('../../TaskManagementDb/config/db');
 
 exports.create = (data) => {
+    console.log([
+        data.projectName,
+        data.BugDetails,
+        data.findDate,
+        data.solveDate,
+        Array.isArray(data.assignWith) ? data.assignWith.join(',') : null,  // Convert array to comma-separated string
+        data.priority,
+        // data.attachmentFile,
+        `https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/${data.attachmentFile}`,
+        data.status,
+        data.createdEmail,
+        `https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/${data.attachmentFile}`,
+        data.bugProjectId
+    ]);
+
     return TaskManagementPool.execute(
         'INSERT INTO BugManagement (projectName, BugDetails, findDate, solveDate, assignWith, priority, attachmentFile, status, creationDate, createdEmail, path,bugProjectId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?)',
         [

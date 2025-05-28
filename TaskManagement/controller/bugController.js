@@ -6,19 +6,23 @@ const schema = require('../schemas/bugManagementSchema');
 exports.create = async (req, res) => {
     try {
         const { error, value } = schema.createBugSchema.validate(req.body);
+        // console.log(value);
+
         if (error) return res.status(400).json({ status: 400, message: error.details[0].message });
 
         let attachmentFile = null;
+        console.log("file", req.file);
+
         if (req.file) {
             attachmentFile = `${req.file.filename}`;
         }
         const bugData = {
             ...value,
-            assignWith: Array.isArray(value.assignWith) ? value.assignWith.join(',') : value.assignWith,
             attachmentFile,
             solveDate: value.solveDate ?? null,
         };
 
+        console.log(bugData);
 
         const result = await model.create(bugData);
         res.status(201).json({ status: 201, message: 'Bug report created', result });

@@ -6,6 +6,7 @@ const TaskModel = require('../model/TaskFullInfoModel');
 const { updateTaskSchema } = require('../schemas/taskSchema');
 const {
     getTaskInfo,
+    getAllTaskInfo,
     getUsersByIds,
     getDiscussionsByTaskId,
     getAttachmentsByDiscussionId,
@@ -145,12 +146,15 @@ exports.getTaskDetailsById = async (req, res) => {
             status: 200,
             message: 'Task Details Retrieved Successfully',
             data: {
-                taskInfo: task,
-                assignedEmployees,
+                taskInfo: {
+                    ...task,
+                    assigned_employee_ids: assignedEmployees
+                },
                 discussions,
                 testReports,
                 resourceFiles
             }
+
         });
 
     } catch (error) {
@@ -158,6 +162,61 @@ exports.getTaskDetailsById = async (req, res) => {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
+
+exports.getAllTaskDetails = async (req, res) => {
+    console.log('🔧 [getAllTaskDetails] Route Hit');
+    try {
+        const allTasks = await getAllTaskInfo(); // Replace with your actual DB call
+
+        const detailedTasks = [];
+
+        for (let task of allTasks) {
+            // Get assigned employees
+            let assignedEmployees = [];
+            if (task.assigned_employee_ids) {
+                const userIds = task.assigned_employee_ids.split(',').map(id => parseInt(id.trim()));
+                assignedEmployees = await getUsersByIds(userIds);
+            }
+
+            // Get discussions and map users and attachments
+            const discussions = await getDiscussionsByTaskId(task.id);
+            for (let discussion of discussions) {
+                discussion.discussion_with_users = [];
+                if (discussion.discussion_with_ids) {
+                    const ids = discussion.discussion_with_ids.split(',').map(id => parseInt(id.trim()));
+                    discussion.discussion_with_users = await getUsersByIds(ids);
+                }
+                discussion.attachments = await getAttachmentsByDiscussionId(discussion.id);
+            }
+
+            // Get additional task resources
+            const testReports = await getTestReportsByTaskId(task.id);
+            const resourceFiles = await getResourceFilesByTaskId(task.id);
+
+            detailedTasks.push({
+                taskInfo: {
+                    ...task,
+                    assigned_employee_ids: assignedEmployees
+                },
+                discussions,
+                testReports,
+                resourceFiles
+            });
+
+        }
+
+        res.status(200).json({
+            status: 200,
+            message: 'All Task Details Retrieved Successfully',
+            data: detailedTasks
+        });
+
+    } catch (error) {
+        console.error('Error retrieving all task details:', error);
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
 
 exports.deleteTaskById = async (req, res) => {
     try {

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const taskController = require('../controller/taskController');
-const { getTaskDetailsById } = require('../controller/taskController');
 
-router.get('/taskManagement/api/task-details/:taskId', getTaskDetailsById);
+router.get('/taskManagement/api/task-details/:taskId', taskController.getTaskDetailsById);
+router.get('/taskManagement/api/All-task-details/getAll', taskController.getAllTaskDetails);
 router.post('/taskManagement/api/tasks/Create', taskController.createTask);
 router.post('/taskManagement/api/tasks/update/:id', taskController.updateTask);
 router.post('/taskManagement/api/delete-task', taskController.deleteTaskById);

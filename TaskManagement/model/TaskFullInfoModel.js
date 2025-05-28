@@ -64,6 +64,14 @@ exports.getTaskInfo = async (taskId) => {
     return rows[0];
 };
 
+exports.getAllTaskInfo = async () => {
+    console.log(
+        "call"
+    );
+    const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo`);
+    return rows; // return the full array of tasks
+};
+
 exports.getUsersByIds = async (ids) => {
     if (!ids.length) return [];
     const [rows] = await TaskManagementPool.query(`SELECT * FROM users WHERE id IN (?)`, [ids]);
