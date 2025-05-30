@@ -53,6 +53,35 @@ exports.getAllWithBugs = async (req, res) => {
     }
 };
 
+exports.getProjectWithBugsById = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const data = await model.getBugProjectWithBugsById(id);
+
+        if (!data) {
+            return res.status(404).json({
+                status: 404,
+                message: 'Bug project not found',
+                result: null
+            });
+        }
+
+        return res.status(200).json({
+            status: 200,
+            message: 'Bug project with related bugs fetched successfully',
+            result: data
+        });
+    } catch (error) {
+        console.error('Error fetching project with bugs by ID:', error);
+        return res.status(500).json({
+            status: 500,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+
+
 exports.deleteProjectAndBugs = async (req, res) => {
     try {
         const { id } = req.body; // Assuming id comes from body as { id: 5 }

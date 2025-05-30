@@ -19,10 +19,12 @@ exports.uploadTestReport = async (req, res) => {
         const uploadedResults = [];
 
         for (const file of files) {
+            console.log(file);
+
             const filePath = `https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/${file.filename}`;
             const filename = `https://grozziie.zjweiting.com:57683/tht/uploads/test_reports_files/${file.filename}`;
-            await TestReportsModel.insertTestReport(task_id, filename, filePath);
-            uploadedResults.push({ filename: file.filename, path: filePath });
+            await TestReportsModel.insertTestReport(task_id, file.originalname, filename, filePath);
+            uploadedResults.push({ name: file.originalname, filename: file.filename, path: filePath });
         }
 
         return res.status(201).json({

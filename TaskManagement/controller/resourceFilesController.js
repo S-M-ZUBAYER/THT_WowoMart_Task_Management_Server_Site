@@ -19,7 +19,7 @@ exports.createResourceFiles = async (req, res) => {
             const fullPath = `https://grozziie.zjweiting.com:57683/tht/uploads/resources_files/${file.filename}`;
 
             // Save to DB
-            const insertPromise = ResourceFilesModel.createResourceFile(task_id, fileUrl, fullPath);
+            const insertPromise = ResourceFilesModel.createResourceFile(task_id, file.originalname, fileUrl, fullPath);
 
             // Collect data for response
             uploadedFilesData.push({

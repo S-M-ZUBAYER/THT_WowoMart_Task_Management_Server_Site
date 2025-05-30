@@ -1,9 +1,9 @@
 const TaskManagementPool = require('../../TaskManagementDb/config/db');
 
-exports.createResourceFile = async (taskId, resourceFile, path) => {
+exports.createResourceFile = async (taskId, fileName, resourceFile, path) => {
     const [result] = await TaskManagementPool.execute(
-        'INSERT INTO ResourceFiles (task_id, resource_file, path) VALUES (?, ?, ?)',
-        [taskId, resourceFile, path]
+        'INSERT INTO ResourceFiles (task_id, fileName, resource_file, path, creationTime) VALUES (?, ?, ?, ?, Now())',
+        [taskId, fileName, resourceFile, path]
     );
     return result;
 };

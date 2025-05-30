@@ -6,10 +6,21 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
+const http = require('http');
 
 // Increase the limit for JSON and URL-encoded payloads
 app.use(bodyParser.json({ limit: '20mb' })); // Increase as needed
 app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
+
+const server = http.createServer(app);
+// 👉 Initialize WebSocket
+const initWebSocket = require('./websocket/socketHandler');
+initWebSocket(server);
+
+// Start server
+server.listen(PORT, () => {
+    console.log(`🚀 HTTP & WS server running at http://localhost:${PORT}`);
+});
 
 // Import DB pools
 const wowomartPool = require('./wowomartDb/config/db');
