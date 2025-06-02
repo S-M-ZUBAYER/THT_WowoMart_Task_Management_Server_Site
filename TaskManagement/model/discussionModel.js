@@ -36,6 +36,11 @@ const discussionModel = {
         return executeQuery(query, [taskId]);
     },
 
+    getDiscussionsById: (id) => {
+        const query = `SELECT * FROM TaskDiscussionInfo WHERE id = ?`;
+        return executeQuery(query, [id]);
+    },
+
     getAttachmentsByDiscussionId: (discussionId) => {
         const query = `SELECT * FROM DiscussionAttachment WHERE discussion_id = ?`;
         return executeQuery(query, [discussionId]);

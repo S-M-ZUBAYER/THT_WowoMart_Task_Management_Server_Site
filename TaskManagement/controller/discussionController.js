@@ -91,6 +91,38 @@ exports.getDiscussionsByTaskId = async (req, res) => {
     }
 };
 
+exports.getDiscussionsById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const discussion = await DiscussionModel.getDiscussionsById(id);
+
+        if (!discussion) {
+            return res.status(404).json({
+                status: 404,
+                message: 'Discussion not found',
+                result: null
+            });
+        }
+
+        const attachments = await DiscussionModel.getAttachmentsByDiscussionId(id);
+        const discussionWithAttachments = { ...discussion, attachments };
+
+        res.status(200).json({
+            status: 200,
+            message: 'Discussion fetched successfully',
+            result: discussionWithAttachments
+        });
+
+    } catch (err) {
+        console.error('Error fetching discussion:', err);
+        res.status(500).json({
+            status: 500,
+            message: 'Internal server error',
+            result: null
+        });
+    }
+};
+
 exports.getAttachmentsByDiscussionId = async (req, res) => {
     try {
         const { discussionId } = req.params;
