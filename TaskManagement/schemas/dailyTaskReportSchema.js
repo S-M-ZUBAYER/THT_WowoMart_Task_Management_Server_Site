@@ -4,6 +4,7 @@ exports.createReportSchema = Joi.object({
     employeeName: Joi.string().required(),
     employeeEmail: Joi.string().email().required(),
     employeeId: Joi.string().required(),
+    image: Joi.string().optional(),
     reportDetails: Joi.string().required(),
     reportDate: Joi.date().required(),
 });

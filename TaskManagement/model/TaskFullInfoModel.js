@@ -65,10 +65,12 @@ exports.getTaskInfo = async (taskId) => {
 };
 
 exports.getAllTaskInfo = async () => {
-    console.log(
-        "call"
-    );
     const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo`);
+    return rows; // return the full array of tasks
+};
+
+exports.getAllRelatedProjectBugsByProjectName = async (projectName) => {
+    const [rows] = await TaskManagementPool.query(`SELECT * FROM bugmanagement WHERE projectName = ?`, [projectName]);
     return rows; // return the full array of tasks
 };
 

@@ -17,6 +17,7 @@ const {
 const discussionModel = require('../model/discussionModel');
 const { deleteTestReportsByTaskId } = require('../model/testReportsModel');
 const { deleteResourceFilesByTaskId } = require('../model/resourceFilesModel');
+const { getProjectIdByName, deleteByProjectId, deleteByBugsIdForTaskName } = require('../model/bugModel');
 
 
 exports.createTask = async (req, res) => {
@@ -30,9 +31,10 @@ exports.createTask = async (req, res) => {
 
         const taskData = {
             ...value,
-            assigned_employee_ids: assignedIdsString
+            assigned_employee_ids: assignedIdsString,
+            task_deadline: value.task_deadline ?? null,
+            task_completing_date: value.task_completing_date ?? null
         };
-
         // Insert into Task table
         const taskResult = await TaskModel.createTask(taskData);
 
@@ -68,7 +70,13 @@ exports.updateTask = async (req, res) => {
             });
         }
 
-        const result = await TaskModel.updateTask(taskId, value);
+        const updatedTaskData = {
+            ...value,
+            task_deadline: value.task_deadline ?? null,
+            task_completing_date: value.task_completing_date ?? null
+        };
+
+        const result = await TaskModel.updateTask(taskId, updatedTaskData);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({
@@ -217,14 +225,39 @@ exports.getAllTaskDetails = async (req, res) => {
     }
 };
 
-
 exports.deleteTaskById = async (req, res) => {
     try {
-        const { task_id } = req.body;
-
+        const { task_id, projectName } = req.body;
         if (!task_id || typeof task_id !== 'number') {
             return res.status(400).json({ status: 400, message: 'task_id must be a number', result: null });
         }
+
+        // Delete all bugs related to this task
+        const bugManagementIdsRelatedToTask = await TaskModel.getAllRelatedProjectBugsByProjectName(projectName);
+        const bugManagementIdsRelatedToTaskIds = bugManagementIdsRelatedToTask.map(row => row.id);
+        const projectData = await getProjectIdByName(projectName);
+        const projectId = projectData[0]?.id;
+        if (bugManagementIdsRelatedToTaskIds.length > 0) {
+            try {
+                await Promise.all(
+                    bugManagementIdsRelatedToTaskIds.map(async (bugsId) => {
+                        await deleteByBugsIdForTaskName(bugsId);
+                    })
+                );
+
+                const deleted = await deleteByProjectId(projectId);
+                console.log(deleted);
+
+                if (deleted === 0) {
+                    console.warn(`⚠️ No project found with id: ${projectId}`);
+                }
+
+            } catch (err) {
+                console.error('❌ Error deleting all bugs related to this task:', err);
+                return res.status(500).json({ status: 500, message: 'Error deleting related discussions', result: null });
+            }
+        }
+
 
         // Delete related discussions
         const discussionIdsResult = await TaskModel.getDiscussionsByTaskId(task_id);

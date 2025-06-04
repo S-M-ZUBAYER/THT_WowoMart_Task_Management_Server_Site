@@ -5,7 +5,18 @@ const attachmentModel = require('../model/attachmentModel');
 
 
 exports.createDiscussion = async (req, res) => {
-    console.log('Incoming body:', req.body);
+    // ✅ Parse discussion_with_ids if it’s a string
+    if (typeof req.body.discussion_with_ids === 'string') {
+        try {
+            req.body.discussion_with_ids = JSON.parse(req.body.discussion_with_ids);
+        } catch (parseError) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Invalid discussion_with_ids format. Must be a JSON array.',
+                result: null
+            });
+        }
+    }
 
     try {
         const { error, value } = createDiscussionSchema.validate(req.body);
@@ -44,6 +55,20 @@ exports.createDiscussion = async (req, res) => {
 exports.updateDiscussion = async (req, res) => {
     try {
         const discussionId = req.params.id;
+
+        // ✅ Parse JSON string if necessary
+        if (typeof req.body.discussion_with_ids === 'string') {
+            try {
+                req.body.discussion_with_ids = JSON.parse(req.body.discussion_with_ids);
+            } catch (parseError) {
+                return res.status(400).json({
+                    status: 400,
+                    message: 'Invalid discussion_with_ids format. Must be a JSON array.',
+                    result: null
+                });
+            }
+        }
+
         const { error, value } = updateDiscussionSchema.validate(req.body);
 
         if (error) {

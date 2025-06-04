@@ -12,10 +12,10 @@ exports.createTaskSchema = Joi.object({
         'any.required': 'Task starting time is required',
         'date.base': 'Invalid date format for task starting time'
     }),
-    task_deadline: Joi.date().iso().required().messages({
-        'any.required': 'Task deadline is required',
+    task_deadline: Joi.date().iso().optional().messages({
         'date.base': 'Invalid date format for task deadline'
     }),
+
     task_completing_date: Joi.date().iso().allow(null).messages({
         'date.base': 'Invalid date format for task completing date'
     }),
@@ -34,10 +34,14 @@ exports.createTaskSchema = Joi.object({
 exports.updateTaskSchema = Joi.object({
     task_title: Joi.string().required(),
     task_details: Joi.string().required(),
-    task_starting_time: Joi.date().required(),
-    task_deadline: Joi.date().required(),
-    task_completing_date: Joi.date().allow(null),
-    assigned_employee_ids: Joi.array().items(Joi.number().integer()).required(),
+    task_starting_time: Joi.date().iso().required(),
+    task_deadline: Joi.date().iso().optional().messages({
+        'date.base': 'Invalid date format for task deadline'
+    }),
+    task_completing_date: Joi.date().iso().allow(null).messages({
+        'date.base': 'Invalid date format for task completing date'
+    }),
+    assigned_employee_ids: Joi.array().items(Joi.number().integer().positive()).min(1).required(),
     status: Joi.string().valid('To Do', 'In Progress', 'Completed').required()
 });
 

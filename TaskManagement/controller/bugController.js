@@ -4,6 +4,18 @@ const model = require('../model/bugModel');
 const schema = require('../schemas/bugManagementSchema');
 
 exports.create = async (req, res) => {
+    // ✅ Parse assignWith if it’s a string
+    if (typeof req.body.assignWith === 'string') {
+        try {
+            req.body.assignWith = JSON.parse(req.body.assignWith);
+        } catch (parseError) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Invalid assignWith format. Must be a JSON array.',
+                result: null
+            });
+        }
+    }
     try {
         const { error, value } = schema.createBugSchema.validate(req.body);
         // console.log(value);
