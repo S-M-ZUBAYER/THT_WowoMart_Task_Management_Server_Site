@@ -239,18 +239,17 @@ exports.deleteTaskById = async (req, res) => {
         const projectId = projectData[0]?.id;
         if (bugManagementIdsRelatedToTaskIds.length > 0) {
             try {
+                const deleted = await deleteByProjectId(projectId);
+
+                if (deleted === 0) {
+                    console.warn(`⚠️ No project found with id: ${projectId}`);
+                }
                 await Promise.all(
                     bugManagementIdsRelatedToTaskIds.map(async (bugsId) => {
                         await deleteByBugsIdForTaskName(bugsId);
                     })
                 );
 
-                const deleted = await deleteByProjectId(projectId);
-                console.log(deleted);
-
-                if (deleted === 0) {
-                    console.warn(`⚠️ No project found with id: ${projectId}`);
-                }
 
             } catch (err) {
                 console.error('❌ Error deleting all bugs related to this task:', err);

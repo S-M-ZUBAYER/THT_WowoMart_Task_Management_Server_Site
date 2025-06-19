@@ -50,7 +50,13 @@ exports.updateById = (id, data) => {
     );
 };
 
-exports.updateBugById = (id, data) => {
+
+exports.updateBugById = async (id, data) => {
+    if (data.status === 'Solved') {
+        const currentDate = new Date().toISOString().split('T')[0]; // format: YYYY-MM-DD
+        data.solveDate = currentDate;
+    }
+
     const sql = 'UPDATE bugManagement SET ? WHERE id = ?';
     return TaskManagementPool.query(sql, [data, id]);
 };
@@ -98,8 +104,9 @@ exports.getProjectIdByName = async (projectName) => {
 exports.getAll = () => TaskManagementPool.execute('SELECT * FROM BugManagement');
 exports.deleteById = (id) => TaskManagementPool.execute('DELETE FROM BugManagement WHERE id=?', [id]);
 exports.deleteByProjectId = async (id) => {
-    const [result] = await TaskManagementPool.execute('DELETE FROM bugproject WHERE id=?', [id]);
+    const [result] = await TaskManagementPool.execute('DELETE FROM bugproject WHERE id = ?', [id]);
     return result.affectedRows;
 };
+
 exports.getByMultipleId = (ids) => TaskManagementPool.query('SELECT * FROM BugManagement WHERE id IN (?)', [ids]);
 exports.deleteByMultipleId = (ids) => TaskManagementPool.query('DELETE FROM BugManagement WHERE id IN (?)', [ids]);

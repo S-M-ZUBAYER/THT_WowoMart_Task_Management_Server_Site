@@ -12,7 +12,18 @@ const Notification = {
 
     findByUserId: async (userId) => {
         const [rows] = await TaskManagementPool.execute(
-            `SELECT * FROM notifications WHERE userId = ? ORDER BY date DESC`,
+            `SELECT 
+                id,
+                userId,
+                senderId,
+                senderName AS name,  -- 🔁 alias senderName to name
+                message,
+                date,
+                type,
+                path
+             FROM notifications
+             WHERE userId = ?
+             ORDER BY STR_TO_DATE(date, '%m-%d-%Y') DESC`, // Optional: if date is stored as string
             [userId]
         );
         return rows;
