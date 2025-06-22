@@ -21,14 +21,27 @@ exports.makeAdminById = (id) => {
     return TaskManagementPool.query(sql, [id]);
 };
 
-
 exports.findUserByEmail = async (email) => {
     const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE email = ?`, [email]);
     return rows[0];
 };
 
 exports.findUserById = async (id) => {
-    const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE id = ?`, [id]);
+    const sql = `
+        SELECT 
+            id, 
+            name, 
+            email, 
+            image, 
+            role, 
+            DATE_FORMAT(joiningDate, '%Y-%m-%d') AS joiningDate,
+            phone, 
+            designation, 
+            created_at 
+        FROM users 
+        WHERE id = ?
+    `;
+    const [rows] = await TaskManagementPool.execute(sql, [id]);
     return rows[0] || null;
 };
 
@@ -40,16 +53,41 @@ exports.deleteUser = async (id) => {
 exports.findUsersByIds = async (ids) => {
     if (!Array.isArray(ids) || ids.length === 0) return [];
 
-    // Create placeholders like "?, ?, ?" based on the number of IDs
     const placeholders = ids.map(() => '?').join(', ');
-    const sql = `SELECT * FROM users WHERE id IN (${placeholders})`;
+    const sql = `
+        SELECT 
+            id, 
+            name, 
+            email, 
+            image, 
+            role, 
+            DATE_FORMAT(joiningDate, '%Y-%m-%d') AS joiningDate,
+            phone, 
+            designation, 
+            created_at 
+        FROM users 
+        WHERE id IN (${placeholders})
+    `;
 
     const [rows] = await TaskManagementPool.execute(sql, ids);
     return rows;
 };
 
 exports.getAllUsers = async () => {
-    const sql = `SELECT id, name, email, image, role, joiningDate, phone, designation, created_at FROM users`;
+    const sql = `
+        SELECT 
+            id, 
+            name, 
+            email, 
+            image, 
+            role, 
+            DATE_FORMAT(joiningDate, '%Y-%m-%d') AS joiningDate, 
+            phone, 
+            designation, 
+            created_at 
+        FROM users
+        ORDER BY id ASC
+    `;
     const [rows] = await TaskManagementPool.execute(sql);
     return rows;
 };

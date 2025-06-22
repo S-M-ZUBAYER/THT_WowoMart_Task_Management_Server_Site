@@ -42,7 +42,7 @@ exports.updateUser = async (req, res) => {
 
         const userId = req.body.id;
 
-        // 1. Get existing user from DB
+        // 1. Find the user in the database
         const existingUser = await authModel.findUserById(userId);
         if (!existingUser) {
             return res.status(404).json({ status: 404, message: 'User not found', result: null });
@@ -50,23 +50,25 @@ exports.updateUser = async (req, res) => {
 
         let imageUrl = existingUser.image;
 
-        // 2. If new image is uploaded, delete the old one
+        // 2. Handle image update
         if (req.file) {
-            const oldImagePath = path.join(
-                __dirname,
-                '../uploads/employee_images',
-                imageUrl.replace('https://grozziie.zjweiting.com:57683/tht/uploads/employee_images/', '')
-            );
+            const uploadsDir = path.join(__dirname, '../uploads/employee_images');
 
-            if (fs.existsSync(oldImagePath)) {
-                fs.unlinkSync(oldImagePath);
+            // 2.1 Delete the old image if it exists
+            if (imageUrl) {
+                const oldImageName = imageUrl.replace('https://grozziie.zjweiting.com:57683/tht/uploads/employee_images/', '');
+                const oldImagePath = path.join(uploadsDir, oldImageName);
+
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
             }
 
-            // 3. Set new image path
+            // 2.2 Set new image URL
             imageUrl = `https://grozziie.zjweiting.com:57683/tht/uploads/employee_images/${req.file.filename}`;
         }
 
-        // 4. Update user data
+        // 3. Prepare updated user data
         const updatedUser = {
             ...req.body,
             image: imageUrl,
@@ -74,10 +76,14 @@ exports.updateUser = async (req, res) => {
 
         const success = await authModel.updateUser(updatedUser);
         if (!success) {
-            return res.status(404).json({ status: 404, message: 'User update failed', result: null });
+            return res.status(400).json({ status: 400, message: 'User update failed', result: null });
         }
 
-        res.status(200).json({ status: 200, message: 'User updated successfully', result: updatedUser });
+        res.status(200).json({
+            status: 200,
+            message: 'User updated successfully',
+            result: updatedUser
+        });
 
     } catch (err) {
         console.error('Error updating user:', err);

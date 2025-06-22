@@ -104,3 +104,13 @@ exports.deleteTaskById = async (taskId) => {
     const [rows] = await TaskManagementPool.query(` DELETE FROM TaskFullInfo WHERE id=? `, [taskId]);
     return rows[0];
 };
+
+exports.deleteNotificationsByTaskId = async (taskId) => {
+    const sql = `
+        DELETE FROM notifications
+        WHERE path LIKE ?
+    `;
+    const likePattern = `%/task-details/${taskId}%`;
+    const [result] = await TaskManagementPool.execute(sql, [likePattern]);
+    return result;
+};

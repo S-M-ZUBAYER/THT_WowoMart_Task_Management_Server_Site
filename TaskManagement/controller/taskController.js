@@ -237,25 +237,23 @@ exports.deleteTaskById = async (req, res) => {
         const bugManagementIdsRelatedToTaskIds = bugManagementIdsRelatedToTask.map(row => row.id);
         const projectData = await getProjectIdByName(projectName);
         const projectId = projectData[0]?.id;
-        if (bugManagementIdsRelatedToTaskIds.length > 0) {
-            try {
-                const deleted = await deleteByProjectId(projectId);
 
-                if (deleted === 0) {
-                    console.warn(`⚠️ No project found with id: ${projectId}`);
-                }
-                await Promise.all(
-                    bugManagementIdsRelatedToTaskIds.map(async (bugsId) => {
-                        await deleteByBugsIdForTaskName(bugsId);
-                    })
-                );
-
-
-            } catch (err) {
-                console.error('❌ Error deleting all bugs related to this task:', err);
-                return res.status(500).json({ status: 500, message: 'Error deleting related discussions', result: null });
+        try {
+            await Promise.all(
+                bugManagementIdsRelatedToTaskIds.map(async (bugsId) => {
+                    await deleteByBugsIdForTaskName(bugsId);
+                })
+            );
+            const deleted = await deleteByProjectId(projectId);
+            if (deleted === 0) {
+                console.warn(`⚠️ No project found with id: ${projectId}`);
             }
+
+        } catch (err) {
+            console.error('❌ Error deleting all bugs related to this task:', err);
+            return res.status(500).json({ status: 500, message: 'Error deleting related discussions', result: null });
         }
+
 
 
         // Delete related discussions
@@ -314,11 +312,21 @@ exports.deleteTaskById = async (req, res) => {
         // Finally delete the task
         await TaskModel.deleteTaskById(task_id);
 
+        // ✅ Delete related notifications
+        try {
+            await TaskModel.deleteNotificationsByTaskId(task_id);
+            console.log(`✅ Deleted notifications related to task_id ${task_id}`);
+        } catch (err) {
+            console.error('❌ Error deleting related notifications:', err);
+            // Don't block overall success if notifications fail
+        }
+
         return res.status(200).json({
             status: 200,
             message: `Task and all related files and discussions deleted successfully for task_id ${task_id}`,
             result: null
         });
+
 
     } catch (err) {
         console.error('❌ Error deleting task:', err);
