@@ -4,6 +4,7 @@ const model = require('../model/bugModel');
 const schema = require('../schemas/bugManagementSchema');
 
 exports.create = async (req, res) => {
+    console.log(req.body);
     // ✅ Parse assignWith if it’s a string
     if (typeof req.body.assignWith === 'string') {
         try {
@@ -101,6 +102,58 @@ exports.updateBugStatus = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error' });
     }
 };
+
+exports.updateRemarkDetailsStatus = async (req, res) => {
+
+    try {
+        if (!req.body) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Request body is missing',
+                result: null
+            });
+        }
+
+        const { error, value } = schema.updateRemarkDetailsSchema.validate(req.body);
+        if (error || !value) {
+            return res.status(400).json({
+                status: 400,
+                message: error?.details?.[0]?.message || 'Invalid input',
+                result: null
+            });
+        }
+
+        const id = parseInt(req.params.id, 10);
+        if (isNaN(id) || id <= 0) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Invalid bug ID',
+                result: null
+            });
+        }
+
+        const result = await model.updateRemarkDetailsById(id, {
+            remark: value.remark,
+            BugDetails: value.BugDetails
+        });
+
+        res.status(200).json({
+            status: 200,
+            message: 'Bug remark details updated successfully',
+            result
+        });
+
+    } catch (err) {
+        console.error('❌ Error updating bug remark details:', err);
+        res.status(500).json({
+            status: 500,
+            message: 'Server error',
+            result: null
+        });
+    }
+};
+
+
 
 exports.updateBugPriority = async (req, res) => {
     try {

@@ -23,6 +23,7 @@ router.get('/taskManagement/api/bug/getAll', controller.getAll);
 router.post('/taskManagement/api/bug/deleteById', controller.deleteById);
 router.post('/taskManagement/api/bug/delete-multiple_ById', controller.deleteByMultipleId);
 router.post('/taskManagement/api/bugStatus/:id', controller.updateBugStatus);
+router.post('/taskManagement/api/update/remarkDetails/:id', controller.updateRemarkDetailsStatus);
 router.post('/taskManagement/api/bugPriority/:id', controller.updateBugPriority);
 
 module.exports = router;

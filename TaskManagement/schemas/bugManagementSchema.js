@@ -5,6 +5,9 @@ exports.createBugSchema = Joi.object({
         'any.required': 'Project name is required',
         'string.max': 'Project name must be under 255 characters'
     }),
+    BugTitle: Joi.string().required().messages({
+        'any.required': 'Bug Title are required'
+    }),
     BugDetails: Joi.string().required().messages({
         'any.required': 'Bug details are required'
     }),
@@ -20,6 +23,7 @@ exports.createBugSchema = Joi.object({
 
     priority: Joi.string().valid('High', 'Medium', 'Low').required(),
     status: Joi.string().valid('Pending', 'In Progress', 'Solved').required(),
+    remark: Joi.string().valid('Not Checked', 'Not Solved', 'Completed').required(),
     createdEmail: Joi.string().email().required(),
     bugProjectId: Joi.number().required().messages({
         'any.required': 'bugProjectId is required',
@@ -39,6 +43,19 @@ exports.updateBugStatusSchema = Joi.object({
         .messages({
             'any.required': 'Status is required',
             'any.only': 'Status must be one of: Pending, In Progress, Solved'
+        }),
+});
+
+exports.updateRemarkDetailsSchema = Joi.object({
+    BugDetails: Joi.string().required().messages({
+        'any.required': 'Bug Details are required'
+    }),
+    remark: Joi.string()
+        .valid('Not Checked', 'Not Solved', 'Completed')
+        .required()
+        .messages({
+            'any.required': 'Remark is required',
+            'any.only': 'Remark must be one of: Pending, In Progress, Solved'
         }),
 });
 

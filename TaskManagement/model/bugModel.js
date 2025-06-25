@@ -8,25 +8,16 @@ const executeQuery = async (query, params) => {
 };
 
 exports.create = (data) => {
-    console.log([
-        data.projectName,
-        data.BugDetails,
-        data.findDate,
-        data.solveDate,
-        Array.isArray(data.assignWith) ? data.assignWith.join(',') : null,  // Convert array to comma-separated string
-        data.priority,
-        // data.attachmentFile,
-        `https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/${data.attachmentFile}`,
-        data.status,
-        data.createdEmail,
-        `https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/${data.attachmentFile}`,
-        data.bugProjectId
-    ]);
-
     return TaskManagementPool.execute(
-        'INSERT INTO BugManagement (projectName, BugDetails, findDate, solveDate, assignWith, priority, attachmentFile, status, creationDate, createdEmail, path,bugProjectId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?)',
+        `INSERT INTO BugManagement ( 
+        projectName, BugTitle, BugDetails, findDate, solveDate, assignWith,
+        priority, attachmentFile, status, creationDate, createdEmail,
+        path, bugProjectId, remark
+    ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
+`,
         [
             data.projectName,
+            data.BugTitle,
             data.BugDetails,
             data.findDate,
             data.solveDate,
@@ -37,7 +28,8 @@ exports.create = (data) => {
             data.status,
             data.createdEmail,
             `https://grozziie.zjweiting.com:57683/tht/uploads/bugs_attachment_files/${data.attachmentFile}`,
-            data.bugProjectId
+            data.bugProjectId,
+            data.remark
         ]
     );
 
@@ -45,8 +37,8 @@ exports.create = (data) => {
 
 exports.updateById = (id, data) => {
     return TaskManagementPool.execute(
-        'UPDATE BugManagement SET projectName=?, BugDetails=?, findDate=?, solveDate=?, assignWith=?, priority=?, attachmentFile=?, status=?, createdEmail=? WHERE id=?',
-        [data.projectName, data.BugDetails, data.findDate, data.solveDate, data.assignWith, data.priority, data.attachmentFile, data.status, data.createdEmail, id]
+        'UPDATE BugManagement SET projectName=?,BugTitle, BugDetails=?, findDate=?, solveDate=?, assignWith=?, priority=?, attachmentFile=?, status=?, createdEmail=?, remark=? WHERE id=?',
+        [data.projectName, data.BugTitle, data.BugDetails, data.findDate, data.solveDate, data.assignWith, data.priority, data.attachmentFile, data.status, data.createdEmail, data.remark, id]
     );
 };
 
@@ -60,6 +52,17 @@ exports.updateBugById = async (id, data) => {
     const sql = 'UPDATE bugManagement SET ? WHERE id = ?';
     return TaskManagementPool.query(sql, [data, id]);
 };
+
+exports.updateRemarkDetailsById = async (id, data) => {
+    const sql = `
+        UPDATE bugManagement
+        SET remark = ?, BugDetails = ?
+        WHERE id = ?
+    `;
+
+    return TaskManagementPool.query(sql, [data.remark, data.BugDetails, id]);
+};
+
 
 exports.deleteByBugsIdForTaskName = async (bug_id) => {
     console.log(`📌 Deleting attachments for bugs_id: ${bug_id}`);
