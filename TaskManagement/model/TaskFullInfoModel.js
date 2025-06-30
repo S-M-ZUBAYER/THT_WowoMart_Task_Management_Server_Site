@@ -7,10 +7,11 @@ const executeQuery = async (query, params) => {
 
 exports.createTask = async (data) => {
     const query = `INSERT INTO TaskFullInfo 
-      (task_title, task_details, task_starting_time, task_deadline, task_completing_date, assigned_employee_ids, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`;
+      (project_name,task_title, task_details, task_starting_time, task_deadline, task_completing_date, assigned_employee_ids, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const params = [
+        data.project_name,
         data.task_title,
         data.task_details,
         data.task_starting_time,
@@ -63,6 +64,23 @@ exports.getTaskInfo = async (taskId) => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo WHERE id = ?`, [taskId]);
     return rows[0];
 };
+
+exports.getTaskInfoByProjectName = async (project_name) => {
+    const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo WHERE project_name = ?`, [project_name]);
+    return rows;
+};
+
+
+exports.getAllTasksAccordingToProjectName = async () => {
+    const sql = `
+        SELECT id, project_name, task_title, task_details, assigned_employee_ids
+        FROM taskfullinfo
+        ORDER BY project_name, id
+    `;
+    const [rows] = await TaskManagementPool.execute(sql); // ✅ This line was throwing the error
+    return rows;
+};
+
 
 exports.getAllTaskInfo = async () => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo`);

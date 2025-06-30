@@ -1,6 +1,10 @@
 const Joi = require('joi');
 
 exports.createTaskSchema = Joi.object({
+    project_name: Joi.string().max(255).required().messages({
+        'any.required': 'project name is required',
+        'string.max': 'project name must be under 255 characters'
+    }),
     task_title: Joi.string().max(255).required().messages({
         'any.required': 'Task title is required',
         'string.max': 'Task title must be under 255 characters'

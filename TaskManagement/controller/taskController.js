@@ -171,6 +171,127 @@ exports.getTaskDetailsById = async (req, res) => {
     }
 };
 
+exports.getTaskDetailsByProjectName = async (req, res) => {
+    const { project_name } = req.params;
+
+    try {
+        const tasks = await TaskModel.getTaskInfoByProjectName(project_name); // should return an array
+
+        if (!tasks || tasks.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: 'No tasks found for the given project name',
+                result: null
+            });
+        }
+
+        const detailedTasks = await Promise.all(
+            tasks.map(async (task) => {
+                // Get assigned users
+                let assignedEmployees = [];
+                if (task.assigned_employee_ids) {
+                    const userIds = task.assigned_employee_ids
+                        .split(',')
+                        .map(id => parseInt(id.trim()));
+                    assignedEmployees = await getUsersByIds(userIds);
+                }
+
+                // Get discussions
+                const discussions = await getDiscussionsByTaskId(task.id);
+                for (let discussion of discussions) {
+                    discussion.discussion_with_users = [];
+                    if (discussion.discussion_with_ids) {
+                        const ids = discussion.discussion_with_ids
+                            .split(',')
+                            .map(id => parseInt(id.trim()));
+                        discussion.discussion_with_users = await getUsersByIds(ids);
+                    }
+                    discussion.attachments = await getAttachmentsByDiscussionId(discussion.id);
+                }
+
+                // Additional task resources
+                const testReports = await getTestReportsByTaskId(task.id);
+                const resourceFiles = await getResourceFilesByTaskId(task.id);
+
+                return {
+                    taskInfo: {
+                        ...task,
+                        assigned_employee_ids: assignedEmployees
+                    },
+                    discussions,
+                    testReports,
+                    resourceFiles
+                };
+            })
+        );
+
+        res.status(200).json({
+            status: 200,
+            message: 'Task details retrieved successfully',
+            data: detailedTasks
+        });
+
+    } catch (error) {
+        console.error('Error retrieving task details:', error);
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+exports.getAllProjectsWithTasks = async (req, res) => {
+    try {
+        // Fetch all tasks from DB
+        const allTasks = await TaskModel.getAllTasksAccordingToProjectName(); // should return an array of all tasks
+
+        if (!allTasks || allTasks.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: 'No tasks found',
+                result: null
+            });
+        }
+
+        // Group tasks by project_name
+        const projectMap = {};
+
+        for (const task of allTasks) {
+            // Get assigned employees
+            let assignedEmployees = [];
+            if (task.assigned_employee_ids) {
+                const userIds = task.assigned_employee_ids
+                    .split(',')
+                    .map(id => parseInt(id.trim()));
+                assignedEmployees = await getUsersByIds(userIds);
+            }
+
+            if (!projectMap[task.project_name]) {
+                projectMap[task.project_name] = [];
+            }
+
+            projectMap[task.project_name].push({
+                task_title: task.task_title,
+                task_details: task.task_details,
+                assignedEmployees
+            });
+        }
+
+        // Convert to desired array format
+        const result = Object.entries(projectMap).map(([project_name, tasks]) => ({
+            project_name,
+            tasks
+        }));
+
+        res.status(200).json({
+            status: 200,
+            message: 'Projects with tasks retrieved successfully',
+            result
+        });
+
+    } catch (error) {
+        console.error('Error fetching project tasks:', error);
+        res.status(500).json({ status: 500, message: 'Server Error', error: error.message });
+    }
+};
+
 exports.getAllTaskDetails = async (req, res) => {
     console.log('🔧 [getAllTaskDetails] Route Hit');
     try {
