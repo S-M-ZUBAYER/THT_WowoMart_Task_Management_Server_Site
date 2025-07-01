@@ -22,7 +22,10 @@ exports.makeAdminById = (id) => {
 };
 
 exports.findUserByEmail = async (email) => {
-    const [rows] = await TaskManagementPool.execute(`SELECT * FROM users WHERE email = ?`, [email]);
+    const [rows] = await TaskManagementPool.execute(
+        `SELECT * FROM users WHERE email = ? AND deactivate = 0`,
+        [email]
+    );
     return rows[0];
 };
 
@@ -84,16 +87,48 @@ exports.getAllUsers = async () => {
             DATE_FORMAT(joiningDate, '%Y-%m-%d') AS joiningDate, 
             phone, 
             designation, 
+            deactivate,
             created_at 
         FROM users
+        WHERE deactivate = 0
         ORDER BY id ASC
     `;
     const [rows] = await TaskManagementPool.execute(sql);
     return rows;
 };
 
-exports.getAllUsersWithOutImage = async () => {
-    const sql = `SELECT id, name, email,role,designation FROM users`;
+exports.getAllUsersWithDeactivate = async () => {
+    const sql =
+        `SELECT
+    id,
+        name,
+        email,
+        image,
+        role,
+        DATE_FORMAT(joiningDate, '%Y-%m-%d') AS joiningDate,
+            phone,
+            designation,
+            deactivate,
+            created_at 
+        FROM users
+        ORDER BY id ASC`
+        ;
     const [rows] = await TaskManagementPool.execute(sql);
     return rows;
+};
+
+exports.getAllUsersWithOutImage = async () => {
+    const sql = `
+        SELECT id, name, email, role, designation 
+        FROM users 
+        WHERE deactivate = 0
+    `;
+    const [rows] = await TaskManagementPool.execute(sql);
+    return rows;
+};
+
+exports.updateDeactivateStatus = async (userId, deactivate) => {
+    const sql = `UPDATE users SET deactivate = ? WHERE id = ?`;
+    const [result] = await TaskManagementPool.execute(sql, [deactivate, userId]);
+    return result;
 };

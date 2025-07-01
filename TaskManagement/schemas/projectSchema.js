@@ -6,6 +6,6 @@ exports.projectCreateSchema = Joi.object({
     project_requirements: Joi.string().required(),
     project_startDate: Joi.date().iso().required(),
     project_endDate: Joi.date().iso().allow(null),
-    project_status: Joi.string().valid('Pending', 'Ongoing', 'Completed').required(),
+    project_status: Joi.string().valid('To Do', 'In Progress', 'Completed').required(),
     assign_with_ids: Joi.array().items(Joi.number().integer().positive()).min(1).required()
 });

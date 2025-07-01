@@ -68,7 +68,6 @@ const attachmentModel = {
             // Delete images
             if (row.discussion_images) {
                 const images = row.discussion_images.split(',');
-                console.log("discussion");
 
                 images.forEach((filename) => {
                     const imagePath = path.join(__dirname, '../uploads/discussion_images', filename.trim());

@@ -645,7 +645,6 @@ const deleteDiscountController = async (req, res) => {
         }
 
         const result = await deleteShopifyDiscount(discountId);
-        console.log(result);
 
         if (result.success === true) {
             // If deletion was successful

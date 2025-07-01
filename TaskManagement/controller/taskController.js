@@ -18,6 +18,7 @@ const discussionModel = require('../model/discussionModel');
 const { deleteTestReportsByTaskId } = require('../model/testReportsModel');
 const { deleteResourceFilesByTaskId } = require('../model/resourceFilesModel');
 const { getProjectIdByName, deleteByProjectId, deleteByBugsIdForTaskName } = require('../model/bugModel');
+const { getAllProjects } = require('../model/projectModel');
 
 
 exports.createTask = async (req, res) => {
@@ -239,46 +240,46 @@ exports.getTaskDetailsByProjectName = async (req, res) => {
 
 exports.getAllProjectsWithTasks = async (req, res) => {
     try {
-        // Fetch all tasks from DB
-        const allTasks = await TaskModel.getAllTasksAccordingToProjectName(); // should return an array of all tasks
+        const allTasks = await TaskModel.getAllTasksAccordingToProjectName();
+        const allProjects = await getAllProjects(); // Must return full project info
 
-        if (!allTasks || allTasks.length === 0) {
+        if (!allProjects || allProjects.length === 0) {
             return res.status(404).json({
                 status: 404,
-                message: 'No tasks found',
+                message: 'No projects found',
                 result: null
             });
         }
 
-        // Group tasks by project_name
-        const projectMap = {};
+        const result = [];
 
-        for (const task of allTasks) {
-            // Get assigned employees
-            let assignedEmployees = [];
-            if (task.assigned_employee_ids) {
-                const userIds = task.assigned_employee_ids
-                    .split(',')
-                    .map(id => parseInt(id.trim()));
-                assignedEmployees = await getUsersByIds(userIds);
-            }
+        for (const project of allProjects) {
+            // Filter tasks under current project
+            const tasksForThisProject = allTasks.filter(task => task.project_name === project.project_name);
 
-            if (!projectMap[task.project_name]) {
-                projectMap[task.project_name] = [];
-            }
+            const enrichedTasks = await Promise.all(
+                tasksForThisProject.map(async (task) => {
+                    let assignedEmployees = [];
+                    if (task.assigned_employee_ids) {
+                        const userIds = task.assigned_employee_ids
+                            .split(',')
+                            .map(id => parseInt(id.trim()));
+                        assignedEmployees = await getUsersByIds(userIds);
+                    }
 
-            projectMap[task.project_name].push({
-                task_title: task.task_title,
-                task_details: task.task_details,
-                assignedEmployees
+                    return {
+                        task_title: task.task_title,
+                        task_details: task.task_details,
+                        assignedEmployees
+                    };
+                })
+            );
+
+            result.push({
+                ...project,
+                tasks: enrichedTasks
             });
         }
-
-        // Convert to desired array format
-        const result = Object.entries(projectMap).map(([project_name, tasks]) => ({
-            project_name,
-            tasks
-        }));
 
         res.status(200).json({
             status: 200,
@@ -293,10 +294,8 @@ exports.getAllProjectsWithTasks = async (req, res) => {
 };
 
 exports.getAllTaskDetails = async (req, res) => {
-    console.log('🔧 [getAllTaskDetails] Route Hit');
     try {
         const allTasks = await getAllTaskInfo(); // Replace with your actual DB call
-
         const detailedTasks = [];
 
         for (let task of allTasks) {

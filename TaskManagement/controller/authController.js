@@ -224,6 +224,24 @@ exports.getAllUsers = async (_req, res) => {
     }
 };
 
+exports.getAllUsersWithDeactivate = async (_req, res) => {
+    try {
+        const users = await authModel.getAllUsersWithDeactivate();
+        return res.status(200).json({
+            status: 200,
+            message: 'Users fetched successfully',
+            result: users
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            status: 500,
+            message: 'Server error',
+            result: null
+        });
+    }
+};
+
 exports.getAllUsersWithOutImage = async (_req, res) => {
     try {
         const users = await authModel.getAllUsersWithOutImage();
@@ -238,6 +256,37 @@ exports.getAllUsersWithOutImage = async (_req, res) => {
             status: 500,
             message: 'Server error',
             result: null
+        });
+    }
+};
+
+// In controller/userController.js
+exports.updateDeactivateStatus = async (req, res) => {
+    const userId = req.params.id;
+    const { deactivate } = req.body;
+
+    if (typeof deactivate !== 'number' || ![0, 1].includes(deactivate)) {
+        return res.status(400).json({
+            status: 400,
+            message: 'Invalid deactivate value. Must be 0 or 1.',
+        });
+    }
+
+    try {
+        const result = await authModel.updateDeactivateStatus(userId, deactivate);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ status: 404, message: 'User not found' });
+        }
+
+        return res.status(200).json({
+            status: 200,
+            message: `User deactivation status updated to ${deactivate}`,
+        });
+    } catch (err) {
+        console.error('Error updating deactivate status:', err);
+        return res.status(500).json({
+            status: 500,
+            message: 'Server error',
         });
     }
 };

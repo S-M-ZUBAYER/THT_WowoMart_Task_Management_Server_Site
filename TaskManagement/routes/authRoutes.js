@@ -25,6 +25,9 @@ router.post('/taskManagement/api/makeAdmin/:id', authController.makeAdminFromGen
 router.get('/taskManagement/api/user/find/:id', authController.findUserById);
 router.post('/taskManagement/api/user/find-many', authController.findUsersByIds);
 router.get('/taskManagement/api/users/getAll', authController.getAllUsers);
+router.get('/taskManagement/api/users/getAllWithDeactivate', authController.getAllUsersWithDeactivate);
 router.get('/taskManagement/api/users/getAllWithOutImage', authController.getAllUsersWithOutImage);
+router.post('/taskManagement/api/users/deactivate/:id', authController.updateDeactivateStatus);
+
 
 module.exports = router;

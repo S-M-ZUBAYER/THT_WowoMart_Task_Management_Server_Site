@@ -26,7 +26,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/taskManagement/api/projects/create', upload.array('resource_files', 10), projectController.createProject);
-router.delete('/taskManagement/api/projects/delete/:id', projectController.deleteProjectById);
+router.get('/taskManagement/api/project/:id', projectController.getProjectById);
+router.get('/taskManagement/api/projects/getAll', projectController.getAllProjects);
+router.post('/taskManagement/api/projects/update-status/:id', projectController.updateProjectStatus);
+router.post('/taskManagement/api/projects/update/:id', projectController.updateProjectById);
+router.post('/taskManagement/api/projects/upload-resource/:projectId', upload.array('resource_files', 10), projectController.uploadProjectResourceFiles);
+router.post('/taskManagement/api/projects/delete/:id', projectController.deleteProjectById);
+router.post('/taskManagement/api/project-resource-file/delete/:id', projectController.deleteProjectResourceFileById);
 
 
 module.exports = router;

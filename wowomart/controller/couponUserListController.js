@@ -58,8 +58,6 @@ exports.removeWithUpdate = async (req, res) => {
 
     try {
         const result = await CouponUserList.removeWithUpdate(req.body);
-        console.log(result);
-
         res.status(200).json(result);
     } catch (err) {
         res.status(err.status || 500).json({ message: err.message });
