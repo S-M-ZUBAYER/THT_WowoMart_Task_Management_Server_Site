@@ -42,7 +42,6 @@ exports.updateById = (id, data) => {
     );
 };
 
-
 exports.updateBugById = async (id, data) => {
     if (data.status === 'Solved') {
         const currentDate = new Date().toISOString().split('T')[0]; // format: YYYY-MM-DD
@@ -54,15 +53,27 @@ exports.updateBugById = async (id, data) => {
 };
 
 exports.updateRemarkDetailsById = async (id, data) => {
-    const sql = `
-        UPDATE bugManagement
-        SET remark = ?, BugDetails = ?
-        WHERE id = ?
-    `;
+    let sql;
+    let params;
 
-    return TaskManagementPool.query(sql, [data.remark, data.BugDetails, id]);
+    if (data.remark === "Not Solved") {
+        sql = `
+            UPDATE bugManagement
+            SET remark = ?, BugDetails = ?, status = ?
+            WHERE id = ?
+        `;
+        params = [data.remark, data.BugDetails, "In Progress", id];
+    } else {
+        sql = `
+            UPDATE bugManagement
+            SET remark = ?, BugDetails = ?
+            WHERE id = ?
+        `;
+        params = [data.remark, data.BugDetails, id];
+    }
+
+    return TaskManagementPool.query(sql, params);
 };
-
 
 exports.deleteByBugsIdForTaskName = async (bug_id) => {
     console.log(`📌 Deleting attachments for bugs_id: ${bug_id}`);
@@ -97,6 +108,7 @@ exports.deleteByBugsIdForTaskName = async (bug_id) => {
 };
 
 exports.getById = (id) => TaskManagementPool.execute('SELECT * FROM BugManagement WHERE id=?', [id]);
+
 exports.getProjectIdByName = async (projectName) => {
     const [rows] = await TaskManagementPool.execute(
         'SELECT * FROM bugproject WHERE bugProjectName=?',
@@ -104,12 +116,16 @@ exports.getProjectIdByName = async (projectName) => {
     );
     return rows;
 };
+
 exports.getAll = () => TaskManagementPool.execute('SELECT * FROM BugManagement');
+
 exports.deleteById = (id) => TaskManagementPool.execute('DELETE FROM BugManagement WHERE id=?', [id]);
+
 exports.deleteByProjectId = async (id) => {
     const [result] = await TaskManagementPool.execute('DELETE FROM bugproject WHERE id = ?', [id]);
     return result.affectedRows;
 };
 
 exports.getByMultipleId = (ids) => TaskManagementPool.query('SELECT * FROM BugManagement WHERE id IN (?)', [ids]);
+
 exports.deleteByMultipleId = (ids) => TaskManagementPool.query('DELETE FROM BugManagement WHERE id IN (?)', [ids]);

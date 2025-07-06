@@ -10,7 +10,6 @@ cron.schedule('0 2 * * *', async () => {
     await deleteOldNotifications.deleteOldNotifications();
 });
 
-
 router.get('/taskManagement/api/notification/:userId', getNotificationsByUserId);
 
 module.exports = router;

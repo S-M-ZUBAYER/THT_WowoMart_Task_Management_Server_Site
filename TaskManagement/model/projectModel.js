@@ -2,17 +2,20 @@ const TaskManagementPool = require('../../TaskManagementDb/config/db');
 
 exports.createProject = async (data) => {
     const query = `
-        INSERT INTO ProjectInfo (project_name, project_requirements, project_startDate, project_endDate, project_status, assign_with_ids)
+        INSERT INTO ProjectInfo 
+        (project_name, project_requirements, project_startDate, project_endDate, project_status, assign_with_ids)
         VALUES (?, ?, ?, ?, ?, ?)
     `;
+
     const params = [
         data.project_name,
         data.project_requirements,
         data.project_startDate,
-        data.project_endDate,
+        data.project_endDate || null, // ✅ Ensure null if undefined
         data.project_status,
         data.assign_with_ids
     ];
+
     const [result] = await TaskManagementPool.execute(query, params);
     return result;
 };

@@ -148,8 +148,6 @@ exports.updateRemarkDetailsStatus = async (req, res) => {
     }
 };
 
-
-
 exports.updateBugPriority = async (req, res) => {
     try {
         const { error, value } = schema.updateBugPrioritySchema.validate(req.body);

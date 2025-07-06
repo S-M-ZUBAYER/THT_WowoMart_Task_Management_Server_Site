@@ -1,4 +1,5 @@
 const authModel = require('../model/authModel');
+const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const {
@@ -18,10 +19,15 @@ exports.registerUser = async (req, res) => {
         const existing = await authModel.findUserByEmail(req.body.email);
         if (existing) return res.status(409).json({ status: 409, message: 'Email already registered', result: null });
 
-        const imageUrl = req.file ? `https://grozziie.zjweiting.com:57683/tht/uploads/employee_images/${req.file.filename}` : null;
+        const hashedPassword = await bcrypt.hash(req.body.password, 10); // Hash the password
+
+        const imageUrl = req.file
+            ? `https://grozziie.zjweiting.com:57683/tht/uploads/employee_images/${req.file.filename}`
+            : null;
 
         const user = {
             ...req.body,
+            password: hashedPassword, // Store hashed password
             image: imageUrl
         };
 
@@ -105,16 +111,47 @@ exports.makeAdminFromGeneralUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const { error } = loginSchema.validate(req.body);
-        if (error) return res.status(400).json({ status: 400, message: error.details[0].message, result: null });
-
-        const user = await authModel.findUserByEmail(req.body.email);
-        if (!user || user.password !== req.body.password) {
-            return res.status(401).json({ status: 401, message: 'Invalid email or password', result: null });
+        if (error) {
+            return res.status(400).json({
+                status: 400,
+                message: error.details[0].message,
+                result: null
+            });
         }
 
-        res.status(200).json({ status: 200, message: 'Login successful', result: user });
+        const user = await authModel.findUserByEmail(req.body.email);
+        if (!user) {
+            return res.status(401).json({
+                status: 401,
+                message: 'Invalid email or password',
+                result: null
+            });
+        }
+
+        const isMatch = await bcrypt.compare(req.body.password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({
+                status: 401,
+                message: 'Invalid email or password',
+                result: null
+            });
+        }
+
+        // Exclude password from response
+        const { password, ...userWithoutPassword } = user;
+
+        res.status(200).json({
+            status: 200,
+            message: 'Login successful',
+            result: userWithoutPassword
+        });
+
     } catch (err) {
-        res.status(500).json({ status: 500, message: 'Server error', result: null });
+        res.status(500).json({
+            status: 500,
+            message: 'Server error',
+            result: null
+        });
     }
 };
 
@@ -260,7 +297,6 @@ exports.getAllUsersWithOutImage = async (_req, res) => {
     }
 };
 
-// In controller/userController.js
 exports.updateDeactivateStatus = async (req, res) => {
     const userId = req.params.id;
     const { deactivate } = req.body;

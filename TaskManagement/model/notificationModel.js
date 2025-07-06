@@ -28,6 +28,7 @@ const Notification = {
         );
         return rows;
     },
+
     deleteOldNotifications: async () => {
         try {
             const [result] = await TaskManagementPool.execute(`

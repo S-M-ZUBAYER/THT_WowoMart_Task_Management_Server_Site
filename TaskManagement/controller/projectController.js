@@ -6,6 +6,17 @@ const { default: axios } = require('axios');
 
 // Create project with multiple resource files
 exports.createProject = async (req, res) => {
+    if (typeof req.body.assign_with_ids === 'string') {
+        try {
+            req.body.assign_with_ids = JSON.parse(req.body.assign_with_ids);
+        } catch (parseError) {
+            return res.status(400).json({
+                status: 400,
+                message: 'Invalid assign_with_ids format. Must be a JSON array.',
+                result: null
+            });
+        }
+    }
     try {
         const { error, value } = projectCreateSchema.validate(req.body);
         if (error) return res.status(400).json({ status: 400, message: error.details[0].message });

@@ -70,7 +70,6 @@ exports.getTaskInfoByProjectName = async (project_name) => {
     return rows;
 };
 
-
 exports.getAllTasksAccordingToProjectName = async () => {
     const sql = `
         SELECT id, project_name, task_title, task_details, assigned_employee_ids
@@ -80,7 +79,6 @@ exports.getAllTasksAccordingToProjectName = async () => {
     const [rows] = await TaskManagementPool.execute(sql); // ✅ This line was throwing the error
     return rows;
 };
-
 
 exports.getAllTaskInfo = async () => {
     const [rows] = await TaskManagementPool.query(`SELECT * FROM TaskFullInfo`);
