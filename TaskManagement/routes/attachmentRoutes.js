@@ -30,9 +30,121 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     CreateAttachment:
+ *       type: object
+ *       required:
+ *         - discussion_id
+ *       properties:
+ *         discussion_id:
+ *           type: integer
+ *           description: ID of the discussion this attachment is linked to
+ *           example: 12
+ */
+
+/**
+ * @swagger
+ * /taskManagement/api/discussion/attachmentFiles/{discussion_id}:
+ *   get:
+ *     summary: Get all attachments for a discussion by ID
+ *     tags: [Attachment]
+ *     parameters:
+ *       - in: path
+ *         name: discussion_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the discussion
+ *     responses:
+ *       200:
+ *         description: Attachment files fetched successfully
+ */
 router.get('/taskManagement/api/discussion/attachmentFiles/:discussion_id', attachmentController.getAttachmentByDiscussionId);
+
+/**
+ * @swagger
+ * /taskManagement/api/attachment/upload:
+ *   post:
+ *     summary: Upload attachments (images and files)
+ *     tags: [Attachment]
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - discussion_id
+ *             properties:
+ *               discussion_id:
+ *                 type: integer
+ *               files:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *     responses:
+ *       201:
+ *         description: Attachments added successfully
+ */
 router.post('/taskManagement/api/attachment/upload', upload.fields([{ name: 'files' }, { name: 'images' }]), attachmentController.createAttachment);
+
+/**
+ * @swagger
+ * /taskManagement/api/attachment/deleteById:
+ *   post:
+ *     summary: Delete a specific attachment by ID
+ *     tags: [Attachment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Attachment deleted successfully
+ */
 router.post('/taskManagement/api/attachment/deleteById', attachmentController.deleteByIdAttachment);
+
+/**
+ * @swagger
+ * /taskManagement/api/attachment/delete/discussionId:
+ *   post:
+ *     summary: Delete all attachments by discussion ID
+ *     tags: [Attachment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - discussion_id
+ *             properties:
+ *               discussion_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Attachments deleted successfully for the discussion
+ */
 router.post('/taskManagement/api/attachment/delete/discussionId', attachmentController.deleteDiscussionIdAttachment);
+
 
 module.exports = router;

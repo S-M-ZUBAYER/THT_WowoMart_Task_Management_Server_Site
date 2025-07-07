@@ -40,6 +40,7 @@ exports.findUserById = async (id) => {
             DATE_FORMAT(joiningDate, '%Y-%m-%d') AS joiningDate,
             phone, 
             designation, 
+            deactivate,
             created_at 
         FROM users 
         WHERE id = ?
@@ -67,6 +68,7 @@ exports.findUsersByIds = async (ids) => {
             DATE_FORMAT(joiningDate, '%Y-%m-%d') AS joiningDate,
             phone, 
             designation, 
+            deactivate,
             created_at 
         FROM users 
         WHERE id IN (${placeholders})
