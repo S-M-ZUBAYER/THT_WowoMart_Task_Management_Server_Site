@@ -89,6 +89,8 @@ exports.getBugProjectWithBugsById = async (projectId) => {
 };
 
 exports.deleteProjectAndRelatedBugs = async (id) => {
+    console.log("delete");
+
     const sql1 = 'DELETE FROM bugManagement WHERE bugProjectId = ?';
     const sql2 = 'DELETE FROM bugProject WHERE id = ?';
 

@@ -82,8 +82,10 @@ exports.getProjectWithBugsById = async (req, res) => {
 };
 
 exports.deleteProjectAndBugs = async (req, res) => {
+    console.log("first", "delete");
     try {
         const { id } = req.body; // Assuming id comes from body as { id: 5 }
+        console.log(id, "delete");
 
         const result = await model.deleteProjectAndRelatedBugs(id);
 

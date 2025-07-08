@@ -47,16 +47,25 @@ function initWebSocket(server) {
                         return;
                     }
 
-                    await Notification.create(payload); // store in DB
+                    // Save to DB and get insertId
+                    const result = await Notification.create(payload);
+                    const notificationId = result.insertId;
 
-                    // send to online client if available
+                    // Prepare payload with DB ID
+                    const payloadWithId = {
+                        ...payload,
+                        id: notificationId,
+                    };
+
+                    // Send to online user if connected
                     for (const client of wss.clients) {
                         if (client.readyState === WebSocket.OPEN && client.userId === String(userId)) {
-                            client.send(JSON.stringify(payload));
+                            client.send(JSON.stringify(payloadWithId));
                             break;
                         }
                     }
                 };
+
 
                 // Get recipients from DB
                 const sendToUsers = async (userRows, type) => {

@@ -59,7 +59,7 @@ exports.updateRemarkDetailsById = async (id, data) => {
     if (data.remark === "Not Solved") {
         sql = `
             UPDATE bugManagement
-            SET remark = ?, BugDetails = ?, status = ?
+            SET remark = ?, BugDetails = ?, status = ?, solveDate = NULL
             WHERE id = ?
         `;
         params = [data.remark, data.BugDetails, "In Progress", id];

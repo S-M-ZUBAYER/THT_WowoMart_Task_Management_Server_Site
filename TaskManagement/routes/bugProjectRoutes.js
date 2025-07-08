@@ -135,7 +135,7 @@ router.post('/taskManagement/api/projectBug/:id', controller.updateProjectName);
 
 /**
  * @swagger
- * /taskManagement/api/projectBug/deleteProjectNameWithAllBug:
+ * /taskManagement/api/projectBug/delete/deleteProjectNameWithAllBug:
  *   post:
  *     summary: Delete a bug project and all its related bugs
  *     tags: [ProjectBug]
@@ -154,7 +154,7 @@ router.post('/taskManagement/api/projectBug/:id', controller.updateProjectName);
  *       200:
  *         description: Project and related bugs deleted successfully
  */
-router.post('/taskManagement/api/projectBug/deleteProjectNameWithAllBug', controller.deleteProjectAndBugs);
+router.post('/taskManagement/api/projectBug/delete/deleteProjectNameWithAllBug', controller.deleteProjectAndBugs);
 
 
 router.post('/taskManagement/api/projectBug/create', controller.create);
@@ -162,6 +162,6 @@ router.get('/taskManagement/api/projectBug/projectName/getAll', controller.getAl
 router.get('/taskManagement/api/projectBug/with-bugs/getAll', controller.getAllWithBugs);
 router.get('/taskManagement/api/projectBug/with-bugs/getById/:id', controller.getProjectWithBugsById);
 router.post('/taskManagement/api/projectBug/:id', controller.updateProjectName);
-router.post('/taskManagement/api/projectBug/deleteProjectNameWithAllBug', controller.deleteProjectAndBugs);
+// router.post('/taskManagement/api/projectBug/deleteProjectNameWithAllBug', controller.deleteProjectAndBugs);
 
 module.exports = router;
